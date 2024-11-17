@@ -1,6 +1,6 @@
-package com.han56.weather.demos.web.enums;
+package com.han56.weather.enums;
 
-import com.han56.weather.demos.web.utils.ResultCode;
+import com.han56.weather.utils.ResultCode;
 
 public enum CommonResultCode implements ResultCode {
 
@@ -36,7 +36,7 @@ public enum CommonResultCode implements ResultCode {
 
     @Override
     public ResultCodeType getType() {
-        return ResultCodeType.COMMON;
+        return com.han56.weather.enums.ResultCodeType.COMMON;
     }
 
     @Override

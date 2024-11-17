@@ -1,6 +1,6 @@
-package com.han56.weather.demos.web.utils;
+package com.han56.weather.utils;
 
-import com.han56.weather.demos.web.enums.CommonResultCode;
+import com.han56.weather.enums.CommonResultCode;
 
 public class ServiceResult<T> {
 

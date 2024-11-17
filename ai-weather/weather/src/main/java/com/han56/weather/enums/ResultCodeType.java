@@ -1,4 +1,4 @@
-package com.han56.weather.demos.web.enums;
+package com.han56.weather.enums;
 
 public enum ResultCodeType {
 

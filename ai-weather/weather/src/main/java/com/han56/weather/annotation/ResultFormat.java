@@ -1,4 +1,4 @@
-package com.han56.weather.demos.web.annotation;
+package com.han56.weather.annotation;
 
 import org.springframework.web.bind.annotation.ResponseBody;
 

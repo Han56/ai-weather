@@ -1,6 +1,6 @@
-package com.han56.weather.demos.web.utils;
+package com.han56.weather.utils;
 
-import com.han56.weather.demos.web.enums.ResultCodeType;
+import com.han56.weather.enums.ResultCodeType;
 
 public interface ResultCode {
 
