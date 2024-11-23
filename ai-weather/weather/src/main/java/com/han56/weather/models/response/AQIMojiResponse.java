@@ -3,11 +3,12 @@ package com.han56.weather.models.response;
 import com.alibaba.fastjson2.annotation.JSONField;
 import com.han56.weather.models.entity.AQIMojiData;
 import com.han56.weather.models.entity.RC;
+import com.han56.weather.models.entity.ToString;
 
 /**
  * 请求墨迹天气接口返回对应实体类
  * */
-public class AQIMojiResponse {
+public class AQIMojiResponse extends ToString {
 
     //状态码-对应JSON中的code字段
     @JSONField(name = "code")

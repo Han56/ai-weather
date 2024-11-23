@@ -2,6 +2,7 @@ package com.han56.weather.service;
 
 import com.han56.weather.models.response.*;
 import com.han56.weather.utils.ServiceResult;
+import org.springframework.stereotype.Service;
 
 /**
  * 天气预报接口

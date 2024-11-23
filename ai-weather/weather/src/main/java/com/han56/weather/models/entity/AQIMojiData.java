@@ -8,18 +8,18 @@ public class AQIMojiData {
 
     //空气质量预报信息列表-对应JSON字段 apiForecast
     @JSONField(name = "apiForecast")
-    private List<ApiForecast> apiForecasts;
+    private List<ApiForecast> apiForecast;
 
     //城市相关信息
     @JSONField(name = "city")
     private City city;
 
-    public List<ApiForecast> getApiForecasts() {
-        return apiForecasts;
+    public List<ApiForecast> getApiForecast() {
+        return apiForecast;
     }
 
-    public void setApiForecasts(List<ApiForecast> apiForecasts) {
-        this.apiForecasts = apiForecasts;
+    public void setApiForecast(List<ApiForecast> apiForecast) {
+        this.apiForecast = apiForecast;
     }
 
     public City getCity() {

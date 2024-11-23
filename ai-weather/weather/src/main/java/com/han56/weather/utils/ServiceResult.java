@@ -54,7 +54,7 @@ public class ServiceResult<T> {
     /*
      * 成功返回1
      * */
-    private static ServiceResult success(){
+    public static ServiceResult success(){
         ServiceResult result = new ServiceResult<>();
         result.setSuccess(true);
         return result;
@@ -63,14 +63,14 @@ public class ServiceResult<T> {
     /*
      * 成功返回2
      * */
-    private static <T> ServiceResult<T> success(T data){
+    public static <T> ServiceResult<T> success(T data){
         return new ServiceResult<T>(data);
     }
 
     /*
      * 失败返回1
      * */
-    private static ServiceResult fail(){
+    public static ServiceResult fail(){
         ServiceResult result = new ServiceResult<>();
         result.setSuccess(true);
         return result;
@@ -79,7 +79,7 @@ public class ServiceResult<T> {
     /*
      * 失败返回2
      * */
-    private static <T> ServiceResult<T> fail(T data){
+    public static <T> ServiceResult<T> fail(T data){
         return new ServiceResult<T>(data);
     }
 
