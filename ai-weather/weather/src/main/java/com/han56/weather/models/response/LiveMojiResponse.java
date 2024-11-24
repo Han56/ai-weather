@@ -3,11 +3,12 @@ package com.han56.weather.models.response;
 import com.alibaba.fastjson2.annotation.JSONField;
 import com.han56.weather.models.entity.LiveIndex;
 import com.han56.weather.models.entity.RC;
+import com.han56.weather.models.entity.ToString;
 
 /**
  * 生活指数返回映射实体类
  */
-public class LiveMojiResponse {
+public class LiveMojiResponse extends ToString {
 
     @JSONField(name = "code")
     private int code;

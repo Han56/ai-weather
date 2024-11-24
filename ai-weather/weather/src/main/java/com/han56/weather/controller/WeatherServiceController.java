@@ -1,9 +1,7 @@
 package com.han56.weather.controller;
 
 import com.han56.weather.annotation.ResultFormat;
-import com.han56.weather.models.response.AQIMojiResponse;
-import com.han56.weather.models.response.Forecast15DaysMojiResponse;
-import com.han56.weather.models.response.RealTimeMojiWeatherResponse;
+import com.han56.weather.models.response.*;
 import com.han56.weather.service.WeatherForecastService;
 import com.han56.weather.utils.ServiceResult;
 import org.slf4j.Logger;
@@ -53,6 +51,54 @@ public class WeatherServiceController {
         return weatherForecastService.forecast15DaysWeather(cityId);
     }
 
+    /**
+     * 24小时天气预报服务
+     * @param cityId
+     * */
+    @GetMapping("/forecast_hourly_weather")
+    @ResultFormat
+    public ServiceResult<ForecastHourlyMojiResponse> forecastHourlyMojiResponseServiceResult(@RequestParam String cityId){
+        return weatherForecastService.forecastHourlyWeather(cityId);
+    }
 
+    /**
+     * 天气预警服务
+     * @param cityId
+     * */
+    @GetMapping("/weather_alert")
+    @ResultFormat
+    public ServiceResult<WeatherAlertMojiResponse> weatherAlertMojiResponseServiceResult(@RequestParam String cityId){
+        return weatherForecastService.weatherAlert(cityId);
+    }
+
+    /**
+     * 生活指数服务
+     * */
+    @GetMapping("/live_index")
+    @ResultFormat
+    public ServiceResult<LiveMojiResponse> liveMojiResponseServiceResult(@RequestParam String cityId){
+        return weatherForecastService.liveIndex(cityId);
+    }
+
+    /**
+     * 空气指数服务
+     * @param cityId
+     * */
+    @GetMapping("/aqi_real_time")
+    @ResultFormat
+    public ServiceResult<AQIRealTimeMojiResponse> aqiRealTimeMojiResponseServiceResult(@RequestParam String cityId){
+        return weatherForecastService.aqiRealTime(cityId);
+    }
+
+
+    /**
+     * 限行服务
+     * @param cityId
+     * */
+    @GetMapping("/limit_info")
+    @ResultFormat
+    public ServiceResult<LimitInfoMojiResponse> limitInfoMojiResponseServiceResult(@RequestParam String cityId){
+        return weatherForecastService.limitInfo(cityId);
+    }
 
 }

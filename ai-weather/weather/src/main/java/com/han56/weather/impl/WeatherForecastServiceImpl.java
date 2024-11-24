@@ -113,26 +113,106 @@ public class WeatherForecastServiceImpl implements WeatherForecastService {
 
     @Override
     public ServiceResult<ForecastHourlyMojiResponse> forecastHourlyWeather(String cityId) {
-        return null;
+        WebClient webClient = buildBaseWebClient();
+        Mono<String> resultString = webClient.post()
+                .uri("/whapi/json/alicityweather/forecast24hours?cityId={0}&token={1}"
+                        ,cityId,"008d2ad9197090c5dddc76f583616606")
+                .header("Authorization","APPCODE "+APP_CODE)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(String.class)
+                .doOnError(e->{
+                    logger.error("[Moji],call Weather forecast 24h service  error!",e);
+                })
+                .onErrorResume(e-> Mono.empty());
+
+        ForecastHourlyMojiResponse response = JSON.parseObject(resultString.block(),
+                ForecastHourlyMojiResponse.class);
+
+        return ServiceResult.success(response);
     }
 
     @Override
     public ServiceResult<WeatherAlertMojiResponse> weatherAlert(String cityId) {
-        return null;
+        WebClient webClient = buildBaseWebClient();
+        Mono<String> resultString = webClient.post()
+                .uri("/whapi/json/alicityweather/alert?cityId={0}&token={1}"
+                        ,cityId,"7ebe966ee2e04bbd8cdbc0b84f7f3bc7")
+                .header("Authorization","APPCODE "+APP_CODE)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(String.class)
+                .doOnError(e->{
+                    logger.error("[Moji],call Weather alert service  error!",e);
+                })
+                .onErrorResume(e-> Mono.empty());
+
+        WeatherAlertMojiResponse response = JSON.parseObject(resultString.block(),
+                WeatherAlertMojiResponse.class);
+
+        return ServiceResult.success(response);
     }
 
     @Override
     public ServiceResult<LiveMojiResponse> liveIndex(String cityId) {
-        return null;
+        WebClient webClient = buildBaseWebClient();
+        Mono<String> resultString = webClient.post()
+                .uri("/whapi/json/alicityweather/index?cityId={0}&token={1}"
+                        ,cityId,"5944a84ec4a071359cc4f6928b797f91")
+                .header("Authorization","APPCODE "+APP_CODE)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(String.class)
+                .doOnError(e->{
+                    logger.error("[Moji],call Weather live index service  error!",e);
+                })
+                .onErrorResume(e-> Mono.empty());
+
+        LiveMojiResponse response = JSON.parseObject(resultString.block(),
+                LiveMojiResponse.class);
+
+        return ServiceResult.success(response);
     }
 
     @Override
     public ServiceResult<AQIRealTimeMojiResponse> aqiRealTime(String cityId) {
-        return null;
+        WebClient webClient = buildBaseWebClient();
+        Mono<String> resultString = webClient.post()
+                .uri("/whapi/json/alicityweather/aqi?cityId={0}&token={1}"
+                        ,cityId,"8b36edf8e3444047812be3a59d27bab9")
+                .header("Authorization","APPCODE "+APP_CODE)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(String.class)
+                .doOnError(e->{
+                    logger.error("[Moji],call Weather aqi real time service  error!",e);
+                })
+                .onErrorResume(e-> Mono.empty());
+
+        AQIRealTimeMojiResponse response = JSON.parseObject(resultString.block(),
+                AQIRealTimeMojiResponse.class);
+
+        return ServiceResult.success(response);
     }
 
     @Override
     public ServiceResult<LimitInfoMojiResponse> limitInfo(String cityId) {
-        return null;
+        WebClient webClient = buildBaseWebClient();
+        Mono<String> resultString = webClient.post()
+                .uri("/whapi/json/alicityweather/limit?cityId={0}&token={1}"
+                        ,cityId,"27200005b3475f8b0e26428f9bfb13e9")
+                .header("Authorization","APPCODE "+APP_CODE)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(String.class)
+                .doOnError(e->{
+                    logger.error("[Moji],call limit information service  error!",e);
+                })
+                .onErrorResume(e-> Mono.empty());
+
+        LimitInfoMojiResponse response = JSON.parseObject(resultString.block(),
+                LimitInfoMojiResponse.class);
+
+        return ServiceResult.success(response);
     }
 }

@@ -2,9 +2,10 @@ package com.han56.weather.models.response;
 
 import com.alibaba.fastjson2.annotation.JSONField;
 import com.han56.weather.models.entity.RC;
+import com.han56.weather.models.entity.ToString;
 import com.han56.weather.models.entity.WeatherMojiAlertData;
 
-public class WeatherAlertMojiResponse {
+public class WeatherAlertMojiResponse extends ToString{
 
     @JSONField(name = "code")
     private int code;

@@ -2,6 +2,7 @@ package com.han56.weather.models.entity;
 
 import com.alibaba.fastjson2.annotation.JSONField;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -13,7 +14,7 @@ public class LiveIndex {
     private City city;
 
     @JSONField(name = "liveIndex")
-    private Map<String,LiveIndexEntity> liveIndexEntityMap;
+    private Map<String,List<LiveIndexEntity>> listMap;
 
     public City getCity() {
         return city;
@@ -23,11 +24,11 @@ public class LiveIndex {
         this.city = city;
     }
 
-    public Map<String, LiveIndexEntity> getLiveIndexEntityMap() {
-        return liveIndexEntityMap;
+    public Map<String, List<LiveIndexEntity>> getListMap() {
+        return listMap;
     }
 
-    public void setLiveIndexEntityMap(Map<String, LiveIndexEntity> liveIndexEntityMap) {
-        this.liveIndexEntityMap = liveIndexEntityMap;
+    public void setListMap(Map<String, List<LiveIndexEntity>> listMap) {
+        this.listMap = listMap;
     }
 }
