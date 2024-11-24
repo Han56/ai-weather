@@ -2,7 +2,7 @@ package com.han56.weather.models.entity;
 
 import com.alibaba.fastjson2.annotation.JSONField;
 
-public class ApiForecast {
+public class AqiForecast {
 
     //日期
     @JSONField(name = "date")

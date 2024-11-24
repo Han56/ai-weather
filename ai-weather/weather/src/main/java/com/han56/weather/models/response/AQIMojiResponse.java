@@ -26,6 +26,7 @@ public class AQIMojiResponse extends ToString {
     @JSONField(name = "rc")
     private RC rc;
 
+
     public int getCode() {
         return code;
     }
