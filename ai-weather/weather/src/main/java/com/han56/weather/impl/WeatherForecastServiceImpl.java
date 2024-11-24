@@ -71,7 +71,23 @@ public class WeatherForecastServiceImpl implements WeatherForecastService {
 
     @Override
     public ServiceResult<RealTimeMojiWeatherResponse> realTimeWeatherCondition(String cityId) {
-        return null;
+        WebClient webClient = buildBaseWebClient();
+        Mono<String> resultString = webClient.post()
+                .uri("/whapi/json/alicityweather/condition?cityId={0}&token={1}"
+                        ,cityId,"50b53ff8dd7d9fa320d3d3ca32cf8ed1")
+                .header("Authorization","APPCODE "+APP_CODE)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(String.class)
+                .doOnError(e->{
+                    logger.error("[Moji],call realTime Weather condition  error!",e);
+                })
+                .onErrorResume(e-> Mono.empty());
+
+        RealTimeMojiWeatherResponse response = JSON.parseObject(resultString.block(),
+                RealTimeMojiWeatherResponse.class);
+
+        return ServiceResult.success(response);
     }
 
     @Override

@@ -25,10 +25,5 @@ public class TestController {
         return new ServiceResult<>("返回测试数据");
     }
 
-    @GetMapping("/aqi")
-    @ResultFormat
-    public ServiceResult<AQIMojiResponse> aqi(@RequestParam String cityId){
-        return weatherForecastService.aqiForeCast5Days(cityId);
-    }
 
 }
