@@ -92,7 +92,23 @@ public class WeatherForecastServiceImpl implements WeatherForecastService {
 
     @Override
     public ServiceResult<Forecast15DaysMojiResponse> forecast15DaysWeather(String cityId) {
-        return null;
+        WebClient webClient = buildBaseWebClient();
+        Mono<String> resultString = webClient.post()
+                .uri("/whapi/json/alicityweather/forecast15days?cityId={0}&token={1}"
+                        ,cityId,"f9f212e1996e79e0e602b08ea297ffb0")
+                .header("Authorization","APPCODE "+APP_CODE)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(String.class)
+                .doOnError(e->{
+                    logger.error("[Moji],call Weather forecast 15days service  error!",e);
+                })
+                .onErrorResume(e-> Mono.empty());
+
+        Forecast15DaysMojiResponse response = JSON.parseObject(resultString.block(),
+                Forecast15DaysMojiResponse.class);
+
+        return ServiceResult.success(response);
     }
 
     @Override
