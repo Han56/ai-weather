@@ -1,0 +1,7 @@
+<!--pages/aiDress.wxml-->
+<navigation-bar title="AI穿搭" back="{{false}}" color="black" background="#FFF"></navigation-bar>
+<scroll-view class="scrollarea" scroll-y type="list">
+  <view class="container">
+    这里是穿搭页面
+  </view>
+</scroll-view>

@@ -1,0 +1,26 @@
+<!--components/location-compo/location-compo.wxml-->
+<view class="location-component">
+  <view wx:if="{{loading}}" class="loading">
+    <text>正在获取位置...</text>
+  </view>
+  
+  <view wx:elif="{{locationAuthDenied}}" class="auth-denied">
+    <text>需要位置权限才能获取位置信息</text>
+    <button bindtap="requestLocationAuth">授权位置信息</button>
+  </view>
+  
+  <view wx:elif="{{locationInfo}}" class="location-info">
+    <text>{{locationInfo}}</text>
+    <text class="coordinates" wx:if="{{latitude && longitude}}">
+      经度：{{longitude}}，纬度：{{latitude}}
+    </text>
+  </view>
+  
+  <view wx:else class="no-location">
+    <text>暂无位置信息</text>
+  </view>
+  
+  <button class="refresh-btn" bindtap="refreshLocation">
+    刷新位置
+  </button>
+</view>
