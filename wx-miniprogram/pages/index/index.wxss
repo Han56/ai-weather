@@ -5,6 +5,80 @@ page {
   flex-direction: column;
 }
 .scrollarea {
-  flex: 1;
-  overflow-y: hidden;
+  width: 100%;
+  height: 100vh;
+  background-color: #f4f4f4; /* 可根据喜好调整背景色 */
+}
+
+/* 温度与冷暖模块的外层容器样式 */
+.temp-feel-container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+}
+
+/* 天气温度模块样式 */
+.weather-temp-container {
+  width: 240rpx;
+  height: 240rpx;
+  border-radius: 10rpx;
+  background-color: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 5rpx rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.temp-text {
+  font-size: 42rpx;
+  color: #333;
+}
+
+.extra-temp-info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-top: 10rpx;
+}
+
+.extra-temp-item {
+  font-size: 24rpx;
+  color: #666;
+  margin: 0 5rpx;
+}
+
+/* 冷暖模块样式 */
+.feel-temp-container {
+  width: 240rpx;
+  height: 240rpx;
+  border-radius: 10rpx;
+  background-color: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 5rpx rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.feel-temp-title {
+  font-size: 42rpx;
+  color: #333;
+  margin-bottom: 5rpx;
+}
+
+.feel-temp-value {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.alert-title {
+  font-size: 24rpx;
+  color: #666;
+}
+.alert-info {
+  font-size: 36rpx;
+  color: #666;
 }

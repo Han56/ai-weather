@@ -1,0 +1,2 @@
+<!--pages/customLocation/customLocation.wxml-->
+<navigation-bar title="AI看天气" back="{{true}}" color="black" background="#FFF"></navigation-bar>

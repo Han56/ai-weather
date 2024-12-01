@@ -106,12 +106,13 @@ Component({
     getDetailAddress: function (latitude, longitude) {
       const that = this;
       wx.request({
-        url: `https://apis.map.qq.com/ws/geocoder/v1/?location=${latitude},${longitude}&key=YOUR_MAP_KEY&get_poi=1`,
+        url: `https://apis.map.qq.com/ws/geocoder/v1/?location=${latitude},${longitude}&key=UQ4BZ-52MKT-7MJXA-V2ZED-JDSPK-TJB4A&get_poi=1`,
         success: function (res) {
           if (res.data.status === 0) {
-            const address = res.data.result.address;
+            const address = res.data.result.ad_info.district;
+            const city = res.data.result.ad_info.city
             that.setData({
-              locationInfo: address
+              locationInfo: city+' '+address
             });
             that.triggerEvent('addressSuccess', {
               address: address,
@@ -123,6 +124,13 @@ Component({
           console.error('获取详细地址失败：', err);
           that.triggerEvent('addressFail', err);
         }
+      });
+    },
+
+    // 跳转至自定义位置页面
+    goToCustomLocationPage: function () {
+      wx.navigateTo({
+        url: '/pages/customLocation/customLocation' // 跳转到自定义位置页面，路径根据实际情况调整
       });
     },
 

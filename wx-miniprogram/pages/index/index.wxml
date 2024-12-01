@@ -1,8 +1,31 @@
 <!--index.wxml-->
 <navigation-bar title="看天气" back="{{false}}" color="black" background="#FFF"></navigation-bar>
 <scroll-view class="scrollarea" scroll-y type="list">
-  <view class="container">
-    <location-compo></location-compo>
-    这里是首页
+<view class="container">
+  <location-compo></location-compo>
+  <!-- 气温数据、冷暖模块、天气预警 -->
+  <view class="temp-feel-container">
+    <!-- 温度模块 -->
+    <view class="weather-temp-container">
+        <text class="temp-text">{{tempData}}</text>
+        <view class="extra-temp-info">
+          <text class="extra-temp-item">最高{{maxTempData}}</text>
+          <text class="extra-temp-item">最低{{minTempData}}</text>
+        </view>
+    </view>
+    <!-- 冷暖模块 -->
+    <view class="feel-temp-container">
+      <text class="feel-temp-title">{{feel}}</text>
+      <text class="feel-temp-value">体感温度：{{feelTempData}}</text>
+    </view>
+    <!-- 天气预警 -->
+    <view class="feel-temp-container">
+      <text class="alert-title">预警</text>
+      <text class="alert-info">{{alert}}</text>
+    </view>
   </view>
+  <!-- 详细参数数据 -->
+
+
+</view>
 </scroll-view>

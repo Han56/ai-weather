@@ -11,16 +11,14 @@
   
   <view wx:elif="{{locationInfo}}" class="location-info">
     <text>{{locationInfo}}</text>
-    <text class="coordinates" wx:if="{{latitude && longitude}}">
-      经度：{{longitude}}，纬度：{{latitude}}
-    </text>
+    <image class="dropdown-icon" src="/image//home/drop-down.png" bindtap="goToCustomLocationPage" mode="aspectFit"></image>
   </view>
   
   <view wx:else class="no-location">
     <text>暂无位置信息</text>
   </view>
   
-  <button class="refresh-btn" bindtap="refreshLocation">
+  <!-- <button class="refresh-btn" bindtap="refreshLocation">
     刷新位置
-  </button>
+  </button> -->
 </view>
