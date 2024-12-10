@@ -1,5 +1,5 @@
 <!--index.wxml-->
-<navigation-bar title="看天气" back="{{false}}" color="black" background="#FFF"></navigation-bar>
+<navigation-bar title="AI看天气" back="{{false}}" color="black" background="#FFF"></navigation-bar>
 <scroll-view class="scrollarea" scroll-y type="list">
 <view class="container">
   <location-compo></location-compo>
@@ -25,7 +25,32 @@
     </view>
   </view>
   <!-- 详细参数数据 -->
-
+  <!-- 详细参数模块 -->
+  <view class="detail-weather-container">
+      <view class="detail-item-container">
+        <text class="detail-item">天气状况：{{weatherCondition}} |</text>
+        <text class="detail-item">湿度：{{humidity}}% |</text>
+        <text class="detail-item">气压：{{airPressure}}hPa |</text>
+        <text class="detail-item">AQI：{{aqi}} </text>
+        <text class="detail-item">风速：{{windSpeed}}m/s |</text>
+        <text class="detail-item">风力：{{windPower}}级 |</text>
+        <text class="detail-item">风向：{{windDirection}} </text>
+      </view>
+    </view>
+    <!-- 24小时天气预报模块 -->
+    <view class="forecast-24h-container">
+      <view class="title-time-wrapper">
+        <text class="forecast-title">24小时天气预报</text>
+        <view class="sunrise-sunset-container">
+          <text class="sunrise-sunset-item">日出：{{sunriseTime}}</text>
+          <text class="sunrise-sunset-item">日落：{{sunsetTime}}</text>
+        </view>
+      </view>
+      <!-- 这里引入echarts组件用于展示天气预测的面积图，假设你已正确引入echarts组件 -->
+      <view class="echarts-container" id="echarts">
+        <ec-canvas id="24h-forecast-chart" canvas-id="24h-chart" ec="{{ec}}"></ec-canvas>
+      </view>
+    </view>
 
 </view>
 </scroll-view>

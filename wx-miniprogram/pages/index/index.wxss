@@ -82,3 +82,96 @@ page {
   font-size: 36rpx;
   color: #666;
 }
+
+/* 详细参数模块样式 */
+.detail-weather-container {
+  display: flex;
+  flex-direction: column;
+  padding: 10rpx;
+  margin-top: 10rpx;
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1rpx solid #ccc;
+  border-radius: 10rpx;
+}
+
+.detail-item-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+.detail-item {
+  font-size: 16rpx;
+  color: #333;
+  margin-bottom: 5rpx;
+  width: 33.33%;
+  text-align: center;
+}
+
+/* 详细参数模块样式 */
+.detail-weather-container {
+  display: flex;
+  flex-direction: column;
+  padding: 10rpx;
+  margin-top: 10rpx;
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1rpx solid #ccc;
+  border-radius: 10rpx;
+}
+
+.detail-item-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+.detail-item {
+  font-size: 23rpx;
+  color: #333;
+  margin-bottom: 5rpx;
+  width: auto;
+  text-align: center;
+  margin-right: 10rpx;
+  margin-top: 5rpx;
+  margin-left: 10rpx;
+}
+
+.forecast-24h-container {
+  display: flex;
+  flex-direction: column;
+  padding: 10rpx;
+  margin-top: 10rpx;
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1rpx solid #ccc;
+  border-radius: 10rpx;
+}
+
+.title-time-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.forecast-title {
+  font-size: 20rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.sunrise-sunset-container {
+  display: flex;
+  align-items: center;
+}
+
+.sunrise-sunset-item {
+  font-size: 20rpx;
+  font-weight: bold;
+  color: #333;
+  margin-left: 10rpx;
+}
+
+.echarts-container {
+  width: 100%;
+  height: 300rpx; /* 可根据实际需求调整echarts图的高度 */
+}
