@@ -1,6 +1,6 @@
 <!--index.wxml-->
 <navigation-bar title="AI看天气" back="{{false}}" color="black" background="#FFF"></navigation-bar>
-<scroll-view class="scrollarea" scroll-y type="list">
+<scroll-view class="scrollarea" scroll-y="true" type="list">
 <view class="container">
   <location-compo></location-compo>
   <!-- 气温数据、冷暖模块、天气预警 -->
@@ -40,7 +40,7 @@
     <!-- 24小时天气预报模块 -->
     <view class="forecast-24h-container">
       <view class="title-time-wrapper">
-        <text class="forecast-title">24小时天气预报</text>
+        <text class="forecast-title-24">24小时天气预报</text>
         <view class="sunrise-sunset-container">
           <text class="sunrise-sunset-item">日出：{{sunriseTime}}</text>
           <text class="sunrise-sunset-item">日落：{{sunsetTime}}</text>
@@ -51,6 +51,21 @@
         <ec-canvas id="24h-forecast-chart" canvas-id="24h-chart" ec="{{ec}}"></ec-canvas>
       </view>
     </view>
-
+    <!-- 10日天气预报列表 -->
+    <view class="fifteen-day-forecast-container">
+      <text class="forecast-title">10日天气预报</text>
+      <scroll-view class="forecast-scroll-view" scroll-y="true" 	show-scrollbar="false">
+        <view class="forecast-items">
+          <view class="forecast-item" wx:for="{{forecastList}}" wx:key="index">
+            <text class="date">{{item.date}}</text>
+            <image class="weather-icon" src="{{item.iconUrl}}" mode="widthFix"></image>
+            <view class="temperature-range">
+              <text class="low-temp">{{item.lowTemp}}°</text>
+              <text class="high-temp">{{item.highTemp}}°</text>
+            </view>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
 </view>
 </scroll-view>
