@@ -210,7 +210,7 @@ Page({
           title: '实时AQI请求失败',
           duration:1000
         })
-        console.log(err)
+        console.log(err) 
       }
     })
   }
