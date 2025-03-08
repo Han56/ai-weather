@@ -5,13 +5,15 @@
   </view>
   
   <view wx:elif="{{locationAuthDenied}}" class="auth-denied">
-    <text>需要位置权限才能获取位置信息</text>
-    <button bindtap="requestLocationAuth">授权位置信息</button>
+    <text class="auth-text">需要位置权限才能获取位置信息</text>
+    <button class="auth-button" bindtap="requestLocationAuth">授权位置信息</button>
   </view>
   
-  <view wx:elif="{{locationInfo}}" class="location-info">
-    <text>{{locationInfo}}</text>
-    <image class="dropdown-icon" src="/image//home/drop-down.png" bindtap="goToCustomLocationPage" mode="aspectFit"></image>
+  <view wx:elif="{{locationInfo}}" class="location-info" bindtap="goToCustomLocationPage">
+    <view class="location-content">
+      <text class="location-text">{{locationInfo}}</text>
+      <image class="chevron-icon" src="/image/home/drop-down.png" mode="aspectFit"></image>
+    </view>
   </view>
   
   <view wx:else class="no-location">

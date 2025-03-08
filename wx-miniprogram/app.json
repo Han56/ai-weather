@@ -20,7 +20,11 @@
   ],
   "window": {
     "navigationBarTextStyle": "black",
-    "navigationStyle": "custom"
+    "navigationStyle": "custom",
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#f5f5f7",
+    "navigationBarTitleText": "天气预报",
+    "pageOrientation": "portrait"
   },
   "style": "v2",
   "renderer": "skyline",

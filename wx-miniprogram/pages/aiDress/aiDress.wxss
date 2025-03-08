@@ -1,1 +1,156 @@
-/* pages/aiDress.wxss */
+/* 全局容器样式 */
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f5f5f7;
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, sans-serif;
+}
+
+/* 用户画像区域 */
+.portrait-section {
+  width: 100%;
+  aspect-ratio: 9/16;
+  /* background-color: #000; */
+  overflow: hidden;
+}
+
+.portrait-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* AI建议区域 */
+.advice-section {
+  padding: 16px;
+}
+
+.advice-card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.advice-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1d1d1f;
+  margin-bottom: 12px;
+}
+
+.advice-content {
+  font-size: 15px;
+  line-height: 1.5;
+  color: #424245;
+}
+
+/* 生活指数区域 */
+.life-index-section {
+  padding: 16px;
+  background-color: #ffffff;
+  border-radius: 16px;
+  margin: 0 16px 16px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1d1d1f;
+  margin-bottom: 16px;
+}
+
+.index-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.index-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px;
+}
+
+.index-icon {
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.index-name {
+  font-size: 15px;
+  font-weight: 500;
+  color: #1d1d1f;
+  margin-bottom: 4px;
+}
+
+.index-label {
+  font-size: 12px;
+  color: #86868b;
+}
+
+/* 设置模块区域 */
+.settings-section {
+  margin: 0 16px 16px;
+  background-color: #ffffff;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.settings-grid {
+  display: flex;
+  flex-direction: column;
+}
+
+.settings-item {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 0.5px solid #e5e5e5;
+}
+
+.settings-item:last-child {
+  border-bottom: none;
+}
+
+.settings-icon {
+  font-size: 20px;
+  margin-right: 12px;
+  width: 24px;
+  text-align: center;
+}
+
+.settings-text {
+  flex: 1;
+  font-size: 16px;
+  color: #1d1d1f;
+}
+
+.settings-arrow {
+  color: #86868b;
+  font-size: 20px;
+}
+
+/* 底部联系信息 */
+.contact-section {
+  padding: 24px 16px;
+  text-align: center;
+}
+
+.contact-info {
+  color: #86868b;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.contact-item {
+  margin-bottom: 8px;
+}
+
+.contact-item:last-child {
+  margin-bottom: 0;
+}
+

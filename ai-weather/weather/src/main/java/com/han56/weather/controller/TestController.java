@@ -42,7 +42,6 @@ public class TestController {
     }
 
     @GetMapping("/sse/stocks")
-
     public Flux<ServerSentEvent<String>> streamStockPrices() {
 
         return Flux.interval(Duration.ofSeconds(1))

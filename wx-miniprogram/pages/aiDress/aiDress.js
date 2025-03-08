@@ -1,66 +1,48 @@
-// pages/aiDress.js
 Page({
-
-  /**
-   * 页面的初始数据
-   */
   data: {
-
+    userPortrait: "",
+    aiAdvice: {
+      title: "今日穿搭建议",
+      content: `根据当前天气状况，建议着装偏向保暖舒适。可以选择：
+        1. 内搭：长袖T恤或轻薄毛衣
+        2. 外套：轻便夹克或针织开衫
+        3. 下装：常规牛仔裤或休闲长裤
+        4. 鞋子：运动鞋或休闲鞋
+        记得随身携带一件薄外套，以防天气变化。`,
+    },
   },
 
-  /**
-   * 生命周期函数--监听页面加载
-   */
-  onLoad(options) {
-
+  onLoad: () => {
+    // 页面加载时的逻辑
   },
 
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady() {
-
+  // 意见反馈
+  onFeedback: () => {
+    wx.navigateTo({
+      url: "/pages/feedback/feedback",
+    })
   },
 
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow() {
-
+  // 联系我们
+  onContact: () => {
+    wx.showModal({
+      title: "联系我们",
+      content: "客服电话：400-880-0599\n工作时间：工作日9-18点",
+      showCancel: false,
+    })
   },
 
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide() {
-
+  // 隐私协议
+  onPrivacy: () => {
+    wx.navigateTo({
+      url: "/pages/privacy/privacy",
+    })
   },
 
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload() {
-
+  // 用户画像设置
+  onPortraitSettings: () => {
+    wx.navigateTo({
+      url: "/pages/portrait-settings/portrait-settings",
+    })
   },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh() {
-
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom() {
-
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage() {
-
-  }
 })

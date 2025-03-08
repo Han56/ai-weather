@@ -1,7 +1,12 @@
 {
+  "navigationBarTitleText": "天气预报",
+  "navigationBarBackgroundColor": "#f5f5f7",
+  "navigationBarTextStyle": "black",
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark",
+  "disableScroll": true,
   "usingComponents": {
-    "navigation-bar": "/components/navigation-bar/navigation-bar",
-    "location-compo":"/components/location-compo/location-compo",
-    "ec-canvas":"/components/ec-canvas/ec-canvas"
+    "navigation-bar": "/components/navigation-bar/navigation-bar"
   }
 }
+
