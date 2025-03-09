@@ -1,6 +1,5 @@
-<!--pages/aiDress.wxml-->
 <navigation-bar title="AI穿搭" back="{{false}}" color="black" background="#FFF"></navigation-bar>
-<scroll-view scroll-y="true" class="container">
+<scroll-view scroll-y="true" class="container" style="height: 85vh;">
   <!-- 用户画像图片区域 -->
   <view class="portrait-section">
     <image class="portrait-image" src="/images/portrait-placeholder.jpg" mode="aspectFill"></image>
@@ -25,13 +24,6 @@
   <view class="life-index-section">
     <view class="section-title">生活指数</view>
     <view class="index-grid">
-      <!-- 万年历 -->
-      <view class="index-item">
-        <view class="index-icon calendar-icon">📅</view>
-        <view class="index-name">二月初九</view>
-        <view class="index-label">万年历</view>
-      </view>
-      
       <!-- 感冒指数 -->
       <view class="index-item">
         <view class="index-icon">💊</view>
@@ -112,3 +104,4 @@
     </view>
   </view>
 </scroll-view>
+

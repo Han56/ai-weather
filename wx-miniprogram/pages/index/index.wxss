@@ -95,12 +95,14 @@
 }
 
 .detail-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
 }
 
 .detail-item {
+  width: 30%; /* 每个子元素占 30% 的宽度 */
+  margin-bottom: 12px; /* 模拟行间距 */
   display: flex;
   flex-direction: column;
   align-items: center;
