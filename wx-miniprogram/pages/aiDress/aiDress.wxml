@@ -71,11 +71,11 @@
   <!-- 设置模块区域 -->
   <view class="settings-section">
     <view class="settings-grid">
-      <view class="settings-item" bindtap="onFeedback">
+      <!-- <view class="settings-item" bindtap="onFeedback">
         <view class="settings-icon">📝</view>
         <view class="settings-text">意见反馈</view>
         <view class="settings-arrow">›</view>
-      </view>
+      </view> -->
       
       <view class="settings-item" bindtap="onContact">
         <view class="settings-icon">📞</view>

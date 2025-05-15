@@ -17,11 +17,11 @@ Page({
   },
 
   // 意见反馈
-  onFeedback: () => {
-    wx.navigateTo({
-      url: "/pages/feedback/feedback",
-    })
-  },
+  // onFeedback: () => {
+  //   wx.navigateTo({
+  //     url: "/pages/feedback/feedback",
+  //   })
+  // },
 
   // 联系我们
   onContact: () => {

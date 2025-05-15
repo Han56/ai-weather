@@ -2,8 +2,8 @@
 <scroll-view scroll-y="true" class="container">
   <!-- 上半部分：当前天气信息 -->
   <view class="current-weather">
-    <view class="location-container">
-      <view class="location">长沙市 岳麓区</view>
+    <view class="location-container" bindtap="showSelector">
+      <view class="location">{{location}}</view>
       <view class="location-arrow">▼</view>
     </view>
     
@@ -40,7 +40,7 @@
           <text class="detail-value">1013hPa</text>
         </view>
         <view class="detail-item">
-          <text class="detail-label">AQI</text>
+          <text class="detail-label">AQI（空气质量）</text>
           <text class="detail-value">50 优</text>
         </view>
         <view class="detail-item">
@@ -67,11 +67,11 @@
     </view>
     
     <view class="temperature-graph">
-      <view class="graph-title">24小时天气预报</view>
-      <view class="graph-container">
+      <!-- <view class="graph-title">24小时天气预报</view> -->
+      <!-- <view class="graph-container"> -->
         <!-- 这里是图表，实际应用中可以使用canvas绘制 -->
-        <image class="graph-placeholder" src="/images/temp-graph.png" mode="aspectFit"></image>
-      </view>
+        <!-- <image class="graph-placeholder" src="/images/temp-graph.png" mode="aspectFit"></image> -->
+      <!-- </view> -->
     </view>
   </view>
   
@@ -234,7 +234,16 @@
         </view>
         <view class="high-temp">15°</view>
       </view>
+      <view style="height: 90px;"></view>
     </view>
   </view>
 </scroll-view>
 
+<!-- 添加城市选择器组件 -->
+<selector-component
+  show="{{selectorVisible}}"
+  key="UQ4BZ-52MKT-7MJXA-V2ZED-JDSPK-TJB4A"
+  referer="AI看天气"
+  hotCitys="北京,上海,深圳,广州,天津,哈尔滨,呼和浩特"
+  bindselect="onSelectCity"
+></selector-component>

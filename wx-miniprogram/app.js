@@ -22,6 +22,7 @@ App({
   },
   globalData: {
     userInfo: null,
+    cityId: '101010100' // 默认北京
   },
 })
 

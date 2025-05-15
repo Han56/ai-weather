@@ -1,3 +1,3 @@
 export default {
-  BASE_URL: 'https://www.demo.com/api',
+  BASE_URL: 'https://api.your-domain.com/weather/',
 };
