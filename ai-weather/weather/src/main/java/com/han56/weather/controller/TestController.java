@@ -119,24 +119,10 @@ public class TestController {
         return "连接已关闭";
     }
 
-    /**
-     * 获得请求体信息
-     */
-    private static String getRequestBody(HttpServletRequest request) throws IOException {
-        StringBuilder requestBody = new StringBuilder();
-        BufferedReader reader = request.getReader();
-        String line ;
-        while ((line = reader.readLine()) != null){
-            requestBody.append(line);
-        }
-        return requestBody.toString();
-    }
 
     @PostMapping(value = "/streamChatAnswer",produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter streamChatAnswer(HttpServletResponse response,HttpServletRequest request) throws IOException {
-        String requestBody = getRequestBody(request);
+    public SseEmitter streamChatAnswer(){
         return sseEmitterTestService.recieveSSE();
     }
-
 
 }

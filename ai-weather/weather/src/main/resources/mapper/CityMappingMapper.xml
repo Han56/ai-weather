@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.han56.weather.mapper.CityMappingMapper">
+    <resultMap id="cityMappingResultMap" type="com.han56.weather.models.entity.CityMapping">
+        <id property="fid" column="fid"/>
+        <result property="province" column="province"/>
+        <result property="secondCity" column="second_city"/>
+        <result property="cityNameCn" column="city_name_cn"/>
+        <result property="cityNameEn" column="city_name_en"/>
+        <result property="cityNamePy" column="city_name_py"/>
+        <result property="divisionCode" column="division_code"/>
+    </resultMap>
+
+    <insert id="insert">
+        INSERT INTO city_mapping (fid, province, second_city, city_name_cn, city_name_en, city_name_py, division_code)
+        VALUES (#{fid}, #{province}, #{secondCity}, #{cityNameCn}, #{cityNameEn}, #{cityNamePy}, #{divisionCode})
+    </insert>
+
+    <select id="selectById" resultMap="cityMappingResultMap">
+        SELECT * FROM city_mapping WHERE fid = #{fid}
+    </select>
+
+    <select id="selectFidsByDivisionCode" resultType="java.lang.Integer">
+        SELECT fid FROM city_mapping WHERE division_code = #{divisionCode}
+    </select>
+
+    <select id="selectAll" resultMap="cityMappingResultMap">
+        SELECT * FROM city_mapping
+    </select>
+
+    <update id="update">
+        UPDATE city_mapping
+        SET province = #{province}, second_city = #{secondCity}, city_name_cn = #{cityNameCn},
+            city_name_en = #{cityNameEn}, city_name_py = #{cityNamePy}, division_code = #{divisionCode}
+        WHERE fid = #{fid}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM city_mapping WHERE fid = #{fid}
+    </delete>
+</mapper>

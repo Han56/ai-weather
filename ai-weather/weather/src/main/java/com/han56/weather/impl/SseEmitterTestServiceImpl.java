@@ -1,6 +1,5 @@
 package com.han56.weather.impl;
 
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.han56.weather.models.response.ChatCompletionResponse;
 import com.han56.weather.service.SseEmitterTestService;
@@ -8,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -16,7 +14,6 @@ import reactor.core.publisher.Flux;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -114,7 +111,7 @@ public class SseEmitterTestServiceImpl implements SseEmitterTestService {
                         String deltaContent = response.getChoices().get(0).getDelta().getContent();
                         if (deltaContent != null) {
                             LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-                            data.put("sseId", "1");
+                            data.put("sseId", response.getId());
                             data.put("event", "message");
                             data.put("content", deltaContent);
                             sendSSE(sseEmitter, data);
