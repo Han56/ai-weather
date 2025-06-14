@@ -1,79 +1,88 @@
 <navigation-bar title="AI看天气" back="{{false}}" color="black" background="#FFF"></navigation-bar>
 <scroll-view scroll-y="true" class="container">
   <!-- 上半部分：当前天气信息 -->
-  <view class="current-weather">
-    <view class="location-container" bindtap="showSelector">
-      <view class="location">{{location}}</view>
-      <view class="location-arrow">▼</view>
-    </view>
-    
-    <view class="main-info">
-      <view class="temperature-container">
-        <view class="current-temp">25°C</view>
-        <view class="temp-description">较冷</view>
-      </view>
-      
-      <view class="extra-info">
-        <view class="extra-item">
-          <view class="extra-label">预警</view>
-          <view class="extra-value">森林火险</view>
-        </view>
-        <view class="extra-item">
-          <view class="extra-label">体感温度</view>
-          <view class="extra-value">23°C</view>
-        </view>
-      </view>
-    </view>
-    
-    <view class="weather-details">
-      <view class="detail-grid">
-        <view class="detail-item">
-          <text class="detail-label">天气状况</text>
-          <text class="detail-value">晴天</text>
-        </view>
-        <view class="detail-item">
-          <text class="detail-label">湿度</text>
-          <text class="detail-value">50%</text>
-        </view>
-        <view class="detail-item">
-          <text class="detail-label">气压</text>
-          <text class="detail-value">1013hPa</text>
-        </view>
-        <view class="detail-item">
-          <text class="detail-label">AQI（空气质量）</text>
-          <text class="detail-value">50 优</text>
-        </view>
-        <view class="detail-item">
-          <text class="detail-label">风速</text>
-          <text class="detail-value">2m/s</text>
-        </view>
-        <view class="detail-item">
-          <text class="detail-label">风力</text>
-          <text class="detail-value">2级</text>
-        </view>
-        <view class="detail-item">
-          <text class="detail-label">风向</text>
-          <text class="detail-value">东南风</text>
-        </view>
-        <view class="detail-item sun-time">
-          <text class="detail-label">日出</text>
-          <text class="detail-value">06:00</text>
-        </view>
-        <view class="detail-item sun-time">
-          <text class="detail-label">日落</text>
-          <text class="detail-value">18:00</text>
-        </view>
-      </view>
-    </view>
-    
-    <view class="temperature-graph">
-      <!-- <view class="graph-title">24小时天气预报</view> -->
-      <!-- <view class="graph-container"> -->
-        <!-- 这里是图表，实际应用中可以使用canvas绘制 -->
-        <!-- <image class="graph-placeholder" src="/images/temp-graph.png" mode="aspectFit"></image> -->
-      <!-- </view> -->
+  <view class="weather-container">
+  <!-- 头部标题栏 -->
+  <view class="header">
+    <text class="title">实时天气</text>
+    <view class="location" bindtap="openCitySelector">
+      <text>{{selectedCity}}</text>
+      <text class="arrow">▼</text>
     </view>
   </view>
+
+  <!-- 主要天气信息 -->
+  <view class="main-weather">
+    <view class="temperature-section">
+      <text class="temperature">{{currentTemp}}</text>
+      <view class="weather-desc">
+        <text>{{tempDescription}}</text>
+      </view>
+    </view>
+    
+    <!-- 预警和体感温度 - 保持一行 -->
+    <view class="alert-section">
+      <view class="alert-item">
+        <text class="alert-label">{{warning}}</text>
+      </view>
+      <view class="feels-like-item">
+        <text class="feels-like-label">体感温度</text>
+        <text class="feels-like-temp">{{feelsLike}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 九宫格天气详情 -->
+   <!-- 九宫格天气详情 -->
+   <view class="weather-grid">
+      <view class="grid-item">
+        <text class="grid-icon">☀️</text>
+        <text class="grid-label">天气状况</text>
+        <view class="grid-tag blue">{{weatherDetails.condition}}</view>
+      </view>
+      <view class="grid-item">
+        <text class="grid-icon">💧</text>
+        <text class="grid-label">湿度</text>
+        <view class="grid-tag blue">{{weatherDetails.humidity}}</view>
+      </view>
+      <view class="grid-item">
+        <text class="grid-icon">📊</text>
+        <text class="grid-label">气压</text>
+        <view class="grid-tag purple">{{weatherDetails.pressure}}</view>
+      </view>
+      <view class="grid-item">
+        <text class="grid-icon">🌞</text>
+        <text class="grid-label">UVI（紫外线）</text>
+        <view class="grid-tag yellow">{{weatherDetails.uvi}}</view>
+      </view>
+      <view class="grid-item">
+        <text class="grid-icon">💨</text>
+        <text class="grid-label">风速</text>
+        <view class="grid-tag green">{{weatherDetails.windSpeed}}</view>
+      </view>
+      <view class="grid-item">
+        <text class="grid-icon">🧭</text>
+        <text class="grid-label">风向</text>
+        <view class="grid-tag orange">{{weatherDetails.windDirection}}</view>
+      </view>
+      <view class="grid-item">
+        <text class="grid-icon">🌿</text>
+        <text class="grid-label">空气质量</text>
+        <view class="grid-tag green">{{aqi}}</view>
+      </view>
+      <view class="grid-item">
+        <text class="grid-icon">🌅</text>
+        <text class="grid-label">日出</text>
+        <view class="grid-tag orange">{{weatherDetails.sunrise}}</view>
+      </view>
+      <view class="grid-item">
+        <text class="grid-icon">🌇</text>
+        <text class="grid-label">日落</text>
+        <view class="grid-tag purple">{{weatherDetails.sunset}}</view>
+      </view>
+    </view>
+</view>
+    
   
   <!-- 下半部分：10日天气预报 -->
   <view class="forecast-container">
@@ -85,165 +94,25 @@
     </view>
     
     <view class="forecast-list">
-      <!-- 今天 -->
-      <view class="forecast-item">
-        <view class="day">今天</view>
-        <view class="weather-icon icon-cloudy"></view>
-        <view class="low-temp">6°</view>
-        <view class="temp-range">
-          <view class="range-bar">
-            <view class="range-fill" style="width: 40%; left: 20%;"></view>
-            <view class="range-dot" style="left: 20%;"></view>
+      <block wx:for="{{forecast}}" wx:key="date">
+        <view class="forecast-item">
+          <view class="day">{{item.day}}</view>
+          <view class="date">{{item.date}}</view>
+          <view class="weather-condition">{{item.condition}}</view>
+          <view class="weather-icon icon-{{item.icon}}">
+          </view>
+          <view class="temp-container">
+            <view class="low-temp">{{item.lowTemp}}</view>
+            <view class="temp-separator">~</view>
+            <view class="high-temp">{{item.highTemp}}</view>
+          </view>
+          <view class="wind-info">
+            <text class="wind-dir">{{item.windDir}}</text>
+            <text class="wind-level">{{item.windLevel}}级</text>
           </view>
         </view>
-        <view class="high-temp">15°</view>
-      </view>
-      
-      <!-- 周日 -->
-      <view class="forecast-item">
-        <view class="day">周日</view>
-        <view class="weather-icon icon-cloudy"></view>
-        <view class="low-temp">9°</view>
-        <view class="temp-range">
-          <view class="range-bar">
-            <view class="range-fill" style="width: 10%; left: 45%;"></view>
-            <view class="range-dot" style="left: 45%;"></view>
-          </view>
-        </view>
-        <view class="high-temp">11°</view>
-      </view>
-      
-      <!-- 周一 -->
-      <view class="forecast-item">
-        <view class="day">周一</view>
-        <view class="weather-icon icon-rainy">
-          <view class="rain-chance">80%</view>
-        </view>
-        <view class="low-temp">9°</view>
-        <view class="temp-range">
-          <view class="range-bar">
-            <view class="range-fill" style="width: 30%; left: 45%;"></view>
-            <view class="range-dot" style="left: 45%;"></view>
-          </view>
-        </view>
-        <view class="high-temp">15°</view>
-      </view>
-      
-      <!-- 周二 -->
-      <view class="forecast-item">
-        <view class="day">周二</view>
-        <view class="weather-icon icon-partly-cloudy"></view>
-        <view class="low-temp">12°</view>
-        <view class="temp-range">
-          <view class="range-bar">
-            <view class="range-fill yellow-fill" style="width: 55%; left: 25%;"></view>
-            <view class="range-dot" style="left: 25%;"></view>
-          </view>
-        </view>
-        <view class="high-temp">23°</view>
-      </view>
-      
-      <!-- 周三 -->
-      <view class="forecast-item">
-        <view class="day">周三</view>
-        <view class="weather-icon icon-thunderstorm">
-          <view class="rain-chance">85%</view>
-        </view>
-        <view class="low-temp">15°</view>
-        <view class="temp-range">
-          <view class="range-bar">
-            <view class="range-fill yellow-fill" style="width: 20%; left: 60%;"></view>
-            <view class="range-dot" style="left: 60%;"></view>
-          </view>
-        </view>
-        <view class="high-temp">19°</view>
-      </view>
-      
-      <!-- 周四 -->
-      <view class="forecast-item">
-        <view class="day">周四</view>
-        <view class="weather-icon icon-rainy">
-          <view class="rain-chance">75%</view>
-        </view>
-        <view class="low-temp">12°</view>
-        <view class="temp-range">
-          <view class="range-bar">
-            <view class="range-fill" style="width: 20%; left: 50%;"></view>
-            <view class="range-dot" style="left: 50%;"></view>
-          </view>
-        </view>
-        <view class="high-temp">16°</view>
-      </view>
-      
-      <!-- 周五 -->
-      <view class="forecast-item">
-        <view class="day">周五</view>
-        <view class="weather-icon icon-thunderstorm">
-          <view class="rain-chance">75%</view>
-        </view>
-        <view class="low-temp">11°</view>
-        <view class="temp-range">
-          <view class="range-bar">
-            <view class="range-fill" style="width: 20%; left: 45%;"></view>
-            <view class="range-dot" style="left: 45%;"></view>
-          </view>
-        </view>
-        <view class="high-temp">15°</view>
-      </view>
-      
-      <!-- 周六 -->
-      <view class="forecast-item">
-        <view class="day">周六</view>
-        <view class="weather-icon icon-rainy">
-          <view class="rain-chance">60%</view>
-        </view>
-        <view class="low-temp">7°</view>
-        <view class="temp-range">
-          <view class="range-bar">
-            <view class="range-fill" style="width: 25%; left: 30%;"></view>
-            <view class="range-dot" style="left: 30%;"></view>
-          </view>
-        </view>
-        <view class="high-temp">12°</view>
-      </view>
-      
-      <!-- 周日 -->
-      <view class="forecast-item">
-        <view class="day">周日</view>
-        <view class="weather-icon icon-cloudy"></view>
-        <view class="low-temp">7°</view>
-        <view class="temp-range">
-          <view class="range-bar">
-            <view class="range-fill" style="width: 40%; left: 30%;"></view>
-            <view class="range-dot" style="left: 30%;"></view>
-          </view>
-        </view>
-        <view class="high-temp">15°</view>
-      </view>
-      
-      <!-- 周一 -->
-      <view class="forecast-item">
-        <view class="day">周一</view>
-        <view class="weather-icon icon-cloudy"></view>
-        <view class="low-temp">5°</view>
-        <view class="temp-range">
-          <view class="range-bar">
-            <view class="range-fill" style="width: 50%; left: 20%;"></view>
-            <view class="range-dot" style="left: 20%;"></view>
-          </view>
-        </view>
-        <view class="high-temp">15°</view>
-      </view>
+      </block>
       <view style="height: 90px;"></view>
     </view>
   </view>
 </scroll-view>
-
-<!-- 添加城市选择器组件 -->
-<selector-component
-  show="{{selectorVisible}}"
-  key="UQ4BZ-52MKT-7MJXA-V2ZED-JDSPK-TJB4A"
-  referer="AI看天气"
-  hotCitys="北京,上海,深圳,广州,天津,哈尔滨,呼和浩特"
-  bindselect="onSelectCity"
-></selector-component>

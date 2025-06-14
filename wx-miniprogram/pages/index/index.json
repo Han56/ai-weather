@@ -6,7 +6,6 @@
   "backgroundTextStyle": "dark",
   "disableScroll": true,
   "usingComponents": {
-    "selector-component": "plugin://citySelector/selector-component",
     "navigation-bar": "/components/navigation-bar/navigation-bar"
   }
 }
