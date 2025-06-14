@@ -1,164 +1,305 @@
-/* 全局容器样式 */
-.container {
-  display: flex;
-  flex-direction: column;
-  background-color: #f5f5f7;
-  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, sans-serif;
-  height: 100%;
+/* 页面容器 */
+.page-container {
+  background-color: #f5f7fa;
+  min-height: 100vh;
+  padding: 0; /* 移除padding */
+  margin-right: 30rpx; /* 确保没有margin */
+  box-sizing: border-box;
 }
 
-/* 用户画像区域 */
-.portrait-section {
-  width: 95%;
-  height: 350px;
-  background-color: #000;
+/* 顶部图片区域 - 9:16比例 */
+.image-container {
+  position: relative;
+  width: 100%;
+  padding-top: 60%; /* 从177.78%大幅减小到60% */
   overflow: hidden;
+  margin: 0; /* 确保没有margin */
 }
 
-.portrait-image {
+.outfit-image {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
+  background-color: #f0f0f0;
 }
 
-/* AI建议区域 */
-.advice-section {
-  padding: 16px; /* 保持上下间距 */
-  margin: 0 10px; /* 水平居中 */
-  width: 90%; /* 占满整个宽度 */
-  box-sizing: border-box; /* 包含 padding 和 border */
+.ai-badge {
+  position: absolute;
+  top: 20rpx;
+  right: 20rpx;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 30rpx;
+  padding: 8rpx 20rpx;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
 }
 
-.advice-card {
-  background-color: #ffffff;
-  border-radius: 16px;
-  padding: 20px;
-  margin-bottom: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+.ai-badge .ai-icon {
+  margin-right: 6rpx;
+  font-size: 24rpx;
 }
 
-.advice-title {
-  font-size: 18px;
+.ai-badge text {
+  font-size: 24rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+/* 今日穿衣推荐卡片 */
+.recommendation-card {
+  margin: 20rpx 20rpx 30rpx 20rpx; /* 减小左右margin */
+  background-color: white;
+  border-radius: 20rpx;
+  padding: 30rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.05);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+}
+
+.header-title .icon {
+  color: #a29bfe;
+  margin-right: 10rpx;
+  font-size: 32rpx;
+}
+
+.header-title .title {
+  font-size: 32rpx;
   font-weight: 600;
-  color: #1d1d1f;
-  margin-bottom: 12px;
+  color: #333;
 }
 
-.advice-content {
-  font-size: 15px;
-  line-height: 1.5;
-  color: #424245;
+.ai-tag {
+  background-color: #f3f0ff;
+  color: #6c5ce7;
+  font-size: 22rpx;
+  padding: 6rpx 16rpx;
+  border-radius: 12rpx;
+  font-weight: 500;
 }
 
-/* 生活指数区域 */
+.recommendation-content {
+  margin-bottom: 30rpx;
+}
+
+.recommendation-text {
+  font-size: 28rpx;
+  color: #666;
+  line-height: 1.6;
+}
+
+.tags-container {
+  display: flex;
+  gap: 20rpx;
+}
+
+.tag {
+  background-color: #f5f5f5;
+  color: #666;
+  font-size: 24rpx;
+  padding: 10rpx 24rpx;
+  border-radius: 30rpx;
+}
+
+/* 用户画像设置 */
+.profile-card {
+  margin: 20rpx 20rpx 30rpx 20rpx; /* 减小左右margin */
+  background: linear-gradient(135deg, #a29bfe 0%, #fd79a8 100%);
+  border-radius: 20rpx;
+  padding: 30rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+}
+
+.profile-left {
+  display: flex;
+  align-items: center;
+}
+
+.profile-icon {
+  width: 80rpx;
+  height: 80rpx;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20rpx;
+}
+
+.profile-icon .icon {
+  font-size: 40rpx;
+}
+
+.profile-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-title {
+  font-size: 32rpx;
+  font-weight: 500;
+  margin-bottom: 6rpx;
+}
+
+.profile-desc {
+  font-size: 24rpx;
+  opacity: 0.8;
+}
+
+.profile-button {
+  background-color: white;
+  color: #a29bfe;
+  padding: 12rpx 30rpx;
+  border-radius: 30rpx;
+  font-size: 26rpx;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+}
+
+.profile-button .arrow {
+  margin-left: 6rpx;
+  font-size: 30rpx;
+}
+
+.profile-tags {
+  margin: 0 20rpx 30rpx 20rpx; /* 减小左右margin */
+  display: flex;
+  gap: 20rpx;
+}
+
+.profile-tag {
+  display: flex;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 10rpx 20rpx;
+  border-radius: 30rpx;
+  font-size: 24rpx;
+  color: #666;
+}
+
+.tag-icon {
+  margin-right: 8rpx;
+  font-size: 24rpx;
+}
+
+/* 生活指数部分 */
 .life-index-section {
-  padding: 16px;
-  background-color: #ffffff;
-  border-radius: 16px;
-  margin-bottom: 16px;
-  margin-right: 16px;
+  margin: 20rpx 20rpx 30rpx 20rpx; /* 减小左右margin */
 }
 
 .section-title {
-  font-size: 18px;
+  font-size: 32rpx;
   font-weight: 600;
-  color: #1d1d1f;
-  margin-bottom: 16px;
+  color: #333;
+  margin-bottom: 20rpx;
+  display: block;
 }
 
-.index-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
+.life-index-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15rpx;
+  background: white;
+  border-radius: 20rpx;
+  padding: 20rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.05);
 }
 
-.index-item {
-  width: 20%; /* 每个子元素占 30% 的宽度 */
-  margin-bottom: 12px; /* 模拟行间距 */
+.grid-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 12px;
+  padding: 20rpx 10rpx;
+  text-align: center;
 }
 
-.index-icon {
-  font-size: 24px;
-  margin-bottom: 8px;
+.grid-icon {
+  font-size: 36rpx;
+  margin-bottom: 12rpx;
 }
 
-.index-name {
-  font-size: 15px;
+.grid-label {
+  font-size: 24rpx;
+  color: #666;
+  margin-bottom: 12rpx;
+}
+
+.grid-tag {
+  padding: 6rpx 12rpx;
+  border-radius: 12rpx;
+  font-size: 20rpx;
   font-weight: 500;
-  color: #1d1d1f;
-  margin-bottom: 4px;
+  color: white;
+  min-width: 60rpx;
+  text-align: center;
 }
 
-.index-label {
-  font-size: 12px;
-  color: #86868b;
+/* 不同颜色的标签 */
+.grid-tag.yellow {
+  background-color: #ffd93d;
+  color: #8b6914;
 }
 
-/* 设置模块区域 */
-.settings-section {
-  margin-bottom: 16px;
-  margin-right: 16px;
-  background-color: #ffffff;
-  border-radius: 16px;
-  overflow: hidden;
+.grid-tag.blue {
+  background-color: #74b9ff;
+  color: white;
 }
 
-.settings-grid {
-  display: flex;
-  flex-direction: column;
+.grid-tag.green {
+  background-color: #00b894;
+  color: white;
 }
 
-.settings-item {
+.grid-tag.orange {
+  background-color: #fd79a8;
+  color: white;
+}
+
+.grid-tag.purple {
+  background-color: #a29bfe;
+  color: white;
+}
+
+/* 底部链接 */
+.footer-links {
+  margin: 20rpx 20rpx 40rpx 20rpx; /* 减小左右margin */
+}
+
+.footer-link {
   display: flex;
   align-items: center;
-  padding: 16px;
-  border-bottom: 0.5px solid #e5e5e5;
+  padding: 30rpx 20rpx;
+  border-bottom: 1rpx solid #eee;
+  color: #666;
+  font-size: 28rpx;
 }
 
-
-
-.settings-icon {
-  font-size: 20px;
-  margin-right: 12px;
-  width: 24px;
-  text-align: center;
+.footer-link:last-child {
+  border-bottom: none;
 }
 
-.settings-text {
-  flex: 1;
-  font-size: 16px;
-  color: #1d1d1f;
+.link-icon {
+  margin-right: 20rpx;
 }
 
-.settings-arrow {
-  color: #86868b;
-  font-size: 20px;
+.link-arrow {
+  margin-left: auto;
+  font-size: 36rpx;
+  color: #ccc;
 }
-
-/* 底部联系信息 */
-.contact-section {
-  padding: 24px 16px;
-  text-align: center;
-}
-
-.contact-info {
-  color: #86868b;
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-.contact-item {
-  margin-bottom: 8px;
-}
-
-/* .contact-item:last-child {
-  margin-bottom: 0;
-} */
-
-/* page {
-  height: 100%;
-  overflow: hidden;
-} */

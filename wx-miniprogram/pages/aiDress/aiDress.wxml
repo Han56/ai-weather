@@ -1,107 +1,130 @@
 <navigation-bar title="AI穿搭" back="{{false}}" color="black" background="#FFF"></navigation-bar>
 <scroll-view scroll-y="true" class="container" style="height: 85vh;">
-  <!-- 用户画像图片区域 -->
-  <view class="portrait-section">
-    <image class="portrait-image" src="/images/portrait-placeholder.jpg" mode="aspectFill"></image>
-  </view>
-
-  <!-- AI穿衣建议区域 -->
-  <view class="advice-section">
-    <view class="advice-card">
-      <view class="advice-title">今日穿搭建议</view>
-      <view class="advice-content">
-        根据当前天气状况，建议着装偏向保暖舒适。可以选择：
-        1. 内搭：长袖T恤或轻薄毛衣
-        2. 外套：轻便夹克或针织开衫
-        3. 下装：常规牛仔裤或休闲长裤
-        4. 鞋子：运动鞋或休闲鞋
-        记得随身携带一件薄外套，以防天气变化。
-      </view>
+  <view class="page-container">
+  <!-- 顶部图片区域 - 9:16比例 -->
+  <view class="image-container">
+    <image class="outfit-image" src="/images/outfit-placeholder.png" mode="aspectFill"></image>
+    <view class="ai-badge">
+      <text class="ai-icon">✨</text>
+      <text>AI推荐</text>
     </view>
   </view>
 
-  <!-- 生活指数区域 -->
+  <!-- 今日穿衣推荐 -->
+  <view class="recommendation-card">
+    <view class="card-header">
+      <view class="header-title">
+        <text class="icon">✨</text>
+        <text class="title">今日穿衣推荐</text>
+      </view>
+      <view class="ai-tag">AI推荐</view>
+    </view>
+    
+    <view class="recommendation-content">
+      <text class="recommendation-text">今天天气晴朗，温度适中，建议您穿着这套休闲舒适的搭配。浅色上衣搭配深色下装，既显瘦又时尚。配上一双舒适的运动鞋，完美适合今天的户外活动。记得带上太阳镜，为整体造型加分！</text>
+    </view>
+    
+    <view class="tags-container">
+      <view class="tag">舒适</view>
+      <view class="tag">时尚</view>
+      <view class="tag">适合外出</view>
+    </view>
+  </view>
+
+  <!-- 用户画像设置 -->
+  <view class="profile-card">
+    <view class="profile-left">
+      <view class="profile-icon">
+        <text class="icon">👤</text>
+      </view>
+      <view class="profile-text">
+        <text class="profile-title">用户画像设置</text>
+        <text class="profile-desc">完善您的个人喜好，获得更精准的AI穿衣推荐</text>
+      </view>
+    </view>
+    <view class="profile-button">
+      <text>设置</text>
+      <text class="arrow">›</text>
+    </view>
+  </view>
+
+  <view class="profile-tags">
+    <view class="profile-tag">
+      <text class="tag-icon">🎨</text>
+      <text>风格偏好</text>
+    </view>
+    <view class="profile-tag">
+      <text class="tag-icon">🔄</text>
+      <text>个性化</text>
+    </view>
+  </view>
+
+  <!-- 生活指数 -->
   <view class="life-index-section">
-    <view class="section-title">生活指数</view>
-    <view class="index-grid">
-      <!-- 感冒指数 -->
-      <view class="index-item">
-        <view class="index-icon">💊</view>
-        <view class="index-name">易发</view>
-        <view class="index-label">感冒</view>
+    <text class="section-title">生活指数</text>
+    
+    <view class="life-index-grid">
+      <view class="grid-item">
+        <text class="grid-icon">🤧</text>
+        <text class="grid-label">感冒</text>
+        <view class="grid-tag green">低发</view>
       </view>
-      
-      <!-- 洗车指数 -->
-      <view class="index-item">
-        <view class="index-icon">🚗</view>
-        <view class="index-name">不宜</view>
-        <view class="index-label">洗车</view>
+      <view class="grid-item">
+        <text class="grid-icon">🌼</text>
+        <text class="grid-label">过敏</text>
+        <view class="grid-tag yellow">中等</view>
       </view>
-      
-      <!-- 穿衣指数 -->
-      <view class="index-item">
-        <view class="index-icon">👕</view>
-        <view class="index-name">温凉</view>
-        <view class="index-label">穿衣</view>
+      <view class="grid-item">
+        <text class="grid-icon">🏃</text>
+        <text class="grid-label">运动</text>
+        <view class="grid-tag blue">适宜</view>
       </view>
-      
-      <!-- 紫外线指数 -->
-      <view class="index-item">
-        <view class="index-icon">☀️</view>
-        <view class="index-name">弱</view>
-        <view class="index-label">紫外线</view>
+      <view class="grid-item">
+        <text class="grid-icon">💄</text>
+        <text class="grid-label">化妆</text>
+        <view class="grid-tag blue">适宜</view>
       </view>
-      
-      <!-- 运动指数 -->
-      <view class="index-item">
-        <view class="index-icon">⚽</view>
-        <view class="index-name">不适宜</view>
-        <view class="index-label">运动</view>
+      <view class="grid-item">
+        <text class="grid-icon">🎣</text>
+        <text class="grid-label">钓鱼</text>
+        <view class="grid-tag green">适宜</view>
       </view>
-      
-      <!-- 钓鱼指数 -->
-      <view class="index-item">
-        <view class="index-icon">🎣</view>
-        <view class="index-name">较适宜</view>
-        <view class="index-label">钓鱼</view>
+      <view class="grid-item">
+        <text class="grid-icon">🧳</text>
+        <text class="grid-label">旅游</text>
+        <view class="grid-tag blue">适宜</view>
       </view>
-    </view>
-  </view>
-
-  <!-- 设置模块区域 -->
-  <view class="settings-section">
-    <view class="settings-grid">
-      <!-- <view class="settings-item" bindtap="onFeedback">
-        <view class="settings-icon">📝</view>
-        <view class="settings-text">意见反馈</view>
-        <view class="settings-arrow">›</view>
-      </view> -->
-      
-      <view class="settings-item" bindtap="onContact">
-        <view class="settings-icon">📞</view>
-        <view class="settings-text">联系我们</view>
-        <view class="settings-arrow">›</view>
+      <view class="grid-item">
+        <text class="grid-icon">🚗</text>
+        <text class="grid-label">洗车</text>
+        <view class="grid-tag yellow">较适宜</view>
       </view>
-      
-      <view class="settings-item" bindtap="onPrivacy">
-        <view class="settings-icon">🔒</view>
-        <view class="settings-text">隐私协议</view>
-        <view class="settings-arrow">›</view>
+      <view class="grid-item">
+        <text class="grid-icon">🚦</text>
+        <text class="grid-label">交通</text>
+        <view class="grid-tag green">良好</view>
       </view>
-      
-      <view class="settings-item" bindtap="onPortraitSettings">
-        <view class="settings-icon">👤</view>
-        <view class="settings-text">用户画像设置</view>
-        <view class="settings-arrow">›</view>
+      <view class="grid-item">
+        <text class="grid-icon">🌫️</text>
+        <text class="grid-label">空气污染</text>
+        <view class="grid-tag green">优</view>
       </view>
     </view>
   </view>
 
-  <!-- 底部联系信息 -->
-  <view class="contact-section">
-    <view class="contact-info">
-      <view class="contact-item">合作方式：010-84798388 转8042（工作日10-18点）</view>
+  <!-- 底部链接 -->
+  <view class="footer-links">
+    <view class="footer-link">
+      <text class="link-icon">📞</text>
+      <text>联系我们</text>
+      <text class="link-arrow">›</text>
+    </view>
+    <view class="footer-link">
+      <text class="link-icon">🔒</text>
+      <text>隐私协议</text>
+      <text class="link-arrow">›</text>
     </view>
   </view>
+</view>
 </scroll-view>
 
