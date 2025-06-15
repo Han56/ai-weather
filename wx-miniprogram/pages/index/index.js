@@ -132,7 +132,7 @@ Page({
     const referer = 'AI看天气';     // 必须填写应用名称
     const hotCitys = '北京,上海,广州,深圳,哈尔滨'; // 自定义热门城市（最多12个）
 
-    console.log('url:'+`plugin://citySelector/index?key=${key}&referer=${referer}&hotCitys=${hotCitys}`)
+    // console.log('url:'+`plugin://citySelector/index?key=${key}&referer=${referer}&hotCitys=${hotCitys}`)
 
     wx.navigateTo({
       url: `plugin://citySelector/index?key=${key}&referer=${referer}&hotCitys=${hotCitys}`
@@ -147,11 +147,11 @@ Page({
         selectedCity: cityInfo.fullname || cityInfo.name,
         location: cityInfo.fullname || cityInfo.name
       });
-      console.log('城市详细信息:', {
-        adcode: cityInfo.id,
-        pinyin: cityInfo.pinyin,
-        location: cityInfo.location
-      });
+      // console.log('城市详细信息:', {
+      //   adcode: cityInfo.id,
+      //   pinyin: cityInfo.pinyin,
+      //   location: cityInfo.location
+      // });
       this.getRealTimeWeather(cityInfo.id);
     }
   },
@@ -265,14 +265,14 @@ Page({
         type: 'gcj02',
         altitude: true,
         success: res => {
-          console.log('获取位置成功:', res);
+          // console.log('获取位置成功:', res);
           resolve({
             lat: res.latitude,
             lng: res.longitude
           });
         },
         fail: err => {
-          console.error('获取位置失败:', err);
+          // console.error('获取位置失败:', err);
           if (err.errMsg.includes('auth deny')) {
             this._showAuthGuide();
           }
@@ -310,9 +310,9 @@ Page({
         },
         success: res => {
           if (res.data.status === 0) {
-            console.log('逆地理编码结果:', res.data.result);
+            // console.log('逆地理编码结果:', res.data.result);
             const adcode = res.data.result.ad_info.adcode;
-            console.log('区划代码:', adcode);
+            // console.log('区划代码:', adcode);
             // 更新全局 adcode
             getApp().globalData.adcode = adcode;
             // 返回包含城市名和adcode的对象
@@ -461,18 +461,18 @@ Page({
         success: (res) => {
           if (res.data && res.data.code === '200') {
             const aqiData = res.data.result.aqiRealTimeMojiData.aqiRealTime;
-            console.log('aqi实时数据:', aqiData.value);
+            // console.log('aqi实时数据:', aqiData.value);
             
             // 获取 AQI 等级
             const aqiLevel = this._getAqiLevel(aqiData.value);
             const aqiText = `${aqiData.value} ${aqiLevel}`;
-            console.log('处理后的 AQI 文本:', aqiText);
+            // console.log('处理后的 AQI 文本:', aqiText);
 
             // 更新 AQI 数据
             this.setData({
               aqi: aqiText
             }, () => {
-              console.log('AQI 数据更新后的 weatherDetails:', this.data.weatherDetails);
+              // console.log('AQI 数据更新后的 weatherDetails:', this.data.weatherDetails);
               resolve(res.data);
             });
           } else {
@@ -559,13 +559,13 @@ Page({
               };
             });
 
-            console.log('处理后的10日预报数据:', tenDaysForecast);
+            // console.log('处理后的10日预报数据:', tenDaysForecast);
 
             // 更新预报数据
             this.setData({
               forecast: tenDaysForecast
             }, () => {
-              console.log('10日天气预报数据已更新:', this.data.forecast);
+              // console.log('10日天气预报数据已更新:', this.data.forecast);
               resolve(res.data);
             });
           } else {

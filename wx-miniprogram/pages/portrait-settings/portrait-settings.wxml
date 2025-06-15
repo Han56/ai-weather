@@ -1,0 +1,163 @@
+<navigation-bar title="用户画像设置" back="{{true}}" color="black" background="#FFF" bindback="onBack"></navigation-bar>
+<view class="page-container">
+  <!-- 页面头部 -->
+  <view class="page-header">
+    <text class="page-title">用户画像设置</text>
+    <text class="page-subtitle">完善您的个人信息，获得更精准的推荐</text>
+  </view>
+
+  <scroll-view class="content-container" scroll-y="true">
+    <form bindsubmit="onFormSubmit">
+      <!-- 基本信息 -->
+      <view class="section">
+        <view class="section-header">
+          <text class="section-icon">👤</text>
+          <text class="section-title">基本信息</text>
+        </view>
+
+        <!-- 性别 -->
+        <view class="form-group">
+          <text class="form-label">性别</text>
+          <view class="radio-group horizontal">
+            <view class="radio-item" wx:for="{{genderOptions}}" wx:key="value">
+              <radio value="{{item.value}}" checked="{{formData.gender === item.value}}" bindtap="onGenderChange" data-value="{{item.value}}"/>
+              <text class="radio-text">{{item.label}}</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 年龄段 -->
+        <view class="form-group">
+          <text class="form-label">年龄段</text>
+          <picker bindchange="onAgeChange" value="{{ageIndex}}" range="{{ageOptions}}" range-key="label">
+            <view class="picker-container">
+              <text class="picker-text">{{formData.age ? ageOptions[ageIndex].label : '请选择年龄段'}}</text>
+              <text class="picker-arrow">▼</text>
+            </view>
+          </picker>
+        </view>
+
+        <!-- 国家与地区 -->
+        <view class="form-group">
+          <text class="form-label">国家与地区</text>
+          <picker bindchange="onCountryChange" value="{{countryIndex}}" range="{{countryOptions}}" range-key="label">
+            <view class="picker-container">
+              <text class="picker-text">{{formData.country ? countryOptions[countryIndex].label : '请选择国家与地区'}}</text>
+              <text class="picker-arrow">▼</text>
+            </view>
+          </picker>
+        </view>
+
+        <!-- 人种 -->
+        <view class="form-group">
+          <text class="form-label">人种</text>
+          <picker bindchange="onRaceChange" value="{{raceIndex}}" range="{{raceOptions}}" range-key="label">
+            <view class="picker-container">
+              <text class="picker-text">{{formData.race ? raceOptions[raceIndex].label : '请选择人种'}}</text>
+              <text class="picker-arrow">▼</text>
+            </view>
+          </picker>
+        </view>
+      </view>
+
+      <!-- 身材信息 -->
+      <view class="section">
+        <view class="section-header">
+          <text class="section-icon">📏</text>
+          <text class="section-title">身材信息</text>
+        </view>
+
+        <!-- 身高 -->
+        <view class="form-group">
+          <text class="form-label">身高</text>
+          <picker bindchange="onHeightChange" value="{{heightIndex}}" range="{{currentHeightOptions}}" range-key="label">
+            <view class="picker-container">
+              <text class="picker-text">{{formData.height ? currentHeightOptions[heightIndex].label : '请选择身高范围'}}</text>
+              <text class="picker-arrow">▼</text>
+            </view>
+          </picker>
+        </view>
+
+        <!-- 体重 -->
+        <view class="form-group">
+          <text class="form-label">体重</text>
+          <picker bindchange="onWeightChange" value="{{weightIndex}}" range="{{currentWeightOptions}}" range-key="label">
+            <view class="picker-container">
+              <text class="picker-text">{{formData.weight ? currentWeightOptions[weightIndex].label : '请选择体重范围'}}</text>
+              <text class="picker-arrow">▼</text>
+            </view>
+          </picker>
+        </view>
+      </view>
+
+      <!-- 穿衣风格 -->
+      <view class="section">
+        <view class="section-header">
+          <text class="section-icon">👔</text>
+          <text class="section-title">穿衣风格</text>
+        </view>
+
+        <view class="form-group">
+          <text class="form-label">风格偏好（可多选）</text>
+          <view class="style-grid">
+            <view wx:for="{{styleOptions}}" 
+                  wx:key="value"
+                  class="style-item {{selectedStates.styles[item.value] ? 'selected' : ''}}" 
+                  bindtap="onStyleTap" 
+                  data-value="{{item.value}}"
+                  data-label="{{item.label}}">
+              <text>{{item.label}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 饰品选择 -->
+      <view class="section">
+        <view class="section-header">
+          <text class="section-icon">💍</text>
+          <text class="section-title">饰品选择</text>
+        </view>
+
+        <view class="form-group">
+          <text class="form-label">常用饰品（可多选）</text>
+          <view class="style-grid">
+            <view wx:for="{{accessoryOptions}}" 
+                  wx:key="value"
+                  class="style-item {{selectedStates.accessories[item.value] ? 'selected' : ''}}" 
+                  bindtap="onAccessoryTap" 
+                  data-value="{{item.value}}"
+                  data-label="{{item.label}}">
+              <text>{{item.label}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 发型选择 -->
+      <view class="section">
+        <view class="section-header">
+          <text class="section-icon">💇</text>
+          <text class="section-title">发型选择</text>
+        </view>
+        <view class="form-group">
+          <text class="form-label">发型偏好（单选）</text>
+          <view class="radio-group">
+            <view class="radio-item" wx:for="{{hairstyleOptions}}" wx:key="value">
+              <radio value="{{item.value}}" checked="{{formData.hairstyles[0] === item.value}}" bindtap="onHairstyleChange" data-value="{{item.value}}"/>
+              <text class="radio-text">{{item.label}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 保存按钮 -->
+      <view class="button-container">
+        <button class="save-button {{!isModified ? 'disabled' : ''}}" 
+                form-type="submit" 
+                disabled="{{!isModified}}">保存设置</button>
+      </view>
+      <view style="height: 110px;"></view>
+    </form>
+  </scroll-view>
+</view>
