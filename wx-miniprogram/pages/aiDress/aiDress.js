@@ -26,8 +26,8 @@ Page({
       mask: true
     });
     
-    const appid = 'wx3e463a85be4880fc';
-    const secret = '412e616cfaa20f7612aac9012776062b';
+    const appid = 'x';
+    const secret = 'x';
     
     wx.login({
       success: (res) => {

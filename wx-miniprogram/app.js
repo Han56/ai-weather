@@ -1,4 +1,8 @@
 App({
+  globalData: {
+    adcode: '230100', // 默认哈尔滨市的adcode
+    userInfo: null
+  },
   onLaunch: function () {
     // 展示本地存储能力
     var logs = wx.getStorageSync("logs") || []
@@ -13,16 +17,12 @@ App({
           wx.getUserInfo({
             success: (res) => {
               // 可以将 res 发送给后台解码出 unionId
-              this.globalData.userInfo = res.userInfo
+              // this.globalData.userInfo = res.userInfo
             },
           })
         }
       },
     })
-  },
-  globalData: {
-    userInfo: null,
-    cityId: '101010100' // 默认北京
   },
 })
 
