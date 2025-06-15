@@ -1,130 +1,111 @@
 <navigation-bar title="AI穿搭" back="{{false}}" color="black" background="#FFF"></navigation-bar>
 <scroll-view scroll-y="true" class="container" style="height: 85vh;">
   <view class="page-container">
-  <!-- 顶部图片区域 - 9:16比例 -->
-  <view class="image-container">
-    <image class="outfit-image" src="/images/outfit-placeholder.png" mode="aspectFill"></image>
-    <view class="ai-badge">
-      <text class="ai-icon">✨</text>
-      <text>AI推荐</text>
+    <view class="loading-container" wx:if="{{loading}}">
+      <view class="loading-spinner"></view>
+      <text class="loading-text">加载中...</text>
     </view>
-  </view>
+    <block wx:else>
+      <!-- 顶部图片区域 - 9:16比例 -->
+      <view class="image-container">
+        <image class="outfit-image" src="" mode="aspectFill"></image>
+        <view class="ai-badge">
+          <text class="ai-icon">✨</text>
+          <text>AI推荐</text>
+        </view>
+      </view>
 
-  <!-- 今日穿衣推荐 -->
-  <view class="recommendation-card">
-    <view class="card-header">
-      <view class="header-title">
-        <text class="icon">✨</text>
-        <text class="title">今日穿衣推荐</text>
+      <!-- 今日穿衣推荐 -->
+      <view class="recommendation-card">
+        <view class="card-header">
+          <view class="header-title">
+            <text class="icon">✨</text>
+            <text class="title">今日穿衣推荐</text>
+          </view>
+          <view class="ai-tag">AI推荐</view>
+        </view>
+        
+        <view class="recommendation-content">
+          <text class="recommendation-text">今天天气晴朗，温度适中，建议您穿着这套休闲舒适的搭配。浅色上衣搭配深色下装，既显瘦又时尚。配上一双舒适的运动鞋，完美适合今天的户外活动。记得带上太阳镜，为整体造型加分！</text>
+        </view>
+        
+        <view class="tags-container">
+          <view class="tag">舒适</view>
+          <view class="tag">时尚</view>
+          <view class="tag">适合外出</view>
+        </view>
       </view>
-      <view class="ai-tag">AI推荐</view>
-    </view>
-    
-    <view class="recommendation-content">
-      <text class="recommendation-text">今天天气晴朗，温度适中，建议您穿着这套休闲舒适的搭配。浅色上衣搭配深色下装，既显瘦又时尚。配上一双舒适的运动鞋，完美适合今天的户外活动。记得带上太阳镜，为整体造型加分！</text>
-    </view>
-    
-    <view class="tags-container">
-      <view class="tag">舒适</view>
-      <view class="tag">时尚</view>
-      <view class="tag">适合外出</view>
-    </view>
-  </view>
 
-  <!-- 用户画像设置 -->
-  <view class="profile-card">
-    <view class="profile-left">
-      <view class="profile-icon">
-        <text class="icon">👤</text>
+      <!-- 用户画像设置 -->
+      <view class="profile-card">
+        <view class="profile-left">
+          <view class="profile-icon">
+            <text class="icon">👤</text>
+          </view>
+          <view class="profile-text">
+            <text class="profile-title">用户画像设置</text>
+            <text class="profile-desc">完善您的个人喜好，获得更精准的AI穿衣推荐</text>
+          </view>
+        </view>
+        <view class="profile-button">
+          <text bind:tap="onPortraitSettings">设置</text>
+          <text class="arrow">›</text>
+        </view>
       </view>
-      <view class="profile-text">
-        <text class="profile-title">用户画像设置</text>
-        <text class="profile-desc">完善您的个人喜好，获得更精准的AI穿衣推荐</text>
-      </view>
-    </view>
-    <view class="profile-button">
-      <text>设置</text>
-      <text class="arrow">›</text>
-    </view>
-  </view>
 
-  <view class="profile-tags">
-    <view class="profile-tag">
-      <text class="tag-icon">🎨</text>
-      <text>风格偏好</text>
-    </view>
-    <view class="profile-tag">
-      <text class="tag-icon">🔄</text>
-      <text>个性化</text>
-    </view>
-  </view>
+      <view class="profile-tags">
+        <view class="profile-tag">
+          <text class="tag-icon">🎨</text>
+          <text>风格偏好</text>
+        </view>
+        <view class="profile-tag">
+          <text class="tag-icon">🔄</text>
+          <text>个性化</text>
+        </view>
+      </view>
 
-  <!-- 生活指数 -->
-  <view class="life-index-section">
-    <text class="section-title">生活指数</text>
-    
-    <view class="life-index-grid">
-      <view class="grid-item">
-        <text class="grid-icon">🤧</text>
-        <text class="grid-label">感冒</text>
-        <view class="grid-tag green">低发</view>
+      <!-- 生活指数 -->
+      <view class="life-index-section">
+        <text class="section-title">生活指数</text>
+        
+        <view class="life-index-grid">
+          <block wx:for="{{liveIndex.listMap[today]}}" wx:key="name">
+            <view class="grid-item" bindtap="showIndexDetail" data-index="{{item}}">
+              <text class="grid-icon">
+                <block wx:if="{{item.name === '紫外线指数'}}">☀️</block>
+                <block wx:elif="{{item.name === '息斯敏过敏指数'}}">🤧</block>
+                <block wx:elif="{{item.name === '感冒指数'}}">🤒</block>
+                <block wx:elif="{{item.name === '运动指数'}}">🏃</block>
+                <block wx:elif="{{item.name === '化妆指数'}}">💄</block>
+                <block wx:elif="{{item.name === '穿衣指数'}}">👔</block>
+                <block wx:elif="{{item.name === '钓鱼指数'}}">🎣</block>
+                <block wx:elif="{{item.name === '交通指数'}}">🚗</block>
+                <block wx:elif="{{item.name === '旅游指数'}}">🧳</block>
+                <block wx:elif="{{item.name === '洗车指数'}}">🚿</block>
+                <block wx:elif="{{item.name === '空气污染扩散指数'}}">🌫️</block>
+                <block wx:else>📊</block>
+              </text>
+              <text class="grid-label">{{item.displayName}}</text>
+              <view class="grid-tag {{item.status === '中等' || item.status === '较适宜' ? 'yellow' : item.status === '适宜' || item.status === '良好' ? 'blue' : item.status === '不易发' || item.status === '优' ? 'green' : item.status === '极易发' || item.status === '不宜' ? 'orange' : 'purple'}}">{{item.status}}</view>
+            </view>
+          </block>
+        </view>
       </view>
-      <view class="grid-item">
-        <text class="grid-icon">🌼</text>
-        <text class="grid-label">过敏</text>
-        <view class="grid-tag yellow">中等</view>
-      </view>
-      <view class="grid-item">
-        <text class="grid-icon">🏃</text>
-        <text class="grid-label">运动</text>
-        <view class="grid-tag blue">适宜</view>
-      </view>
-      <view class="grid-item">
-        <text class="grid-icon">💄</text>
-        <text class="grid-label">化妆</text>
-        <view class="grid-tag blue">适宜</view>
-      </view>
-      <view class="grid-item">
-        <text class="grid-icon">🎣</text>
-        <text class="grid-label">钓鱼</text>
-        <view class="grid-tag green">适宜</view>
-      </view>
-      <view class="grid-item">
-        <text class="grid-icon">🧳</text>
-        <text class="grid-label">旅游</text>
-        <view class="grid-tag blue">适宜</view>
-      </view>
-      <view class="grid-item">
-        <text class="grid-icon">🚗</text>
-        <text class="grid-label">洗车</text>
-        <view class="grid-tag yellow">较适宜</view>
-      </view>
-      <view class="grid-item">
-        <text class="grid-icon">🚦</text>
-        <text class="grid-label">交通</text>
-        <view class="grid-tag green">良好</view>
-      </view>
-      <view class="grid-item">
-        <text class="grid-icon">🌫️</text>
-        <text class="grid-label">空气污染</text>
-        <view class="grid-tag green">优</view>
-      </view>
-    </view>
-  </view>
 
-  <!-- 底部链接 -->
-  <view class="footer-links">
-    <view class="footer-link">
-      <text class="link-icon">📞</text>
-      <text>联系我们</text>
-      <text class="link-arrow">›</text>
-    </view>
-    <view class="footer-link">
-      <text class="link-icon">🔒</text>
-      <text>隐私协议</text>
-      <text class="link-arrow">›</text>
-    </view>
+      <!-- 底部链接 -->
+      <view class="footer-links">
+        <view class="footer-link" bind:tap="onContact">
+          <text class="link-icon">📞</text>
+          <text>联系我们</text>
+          <text class="link-arrow">›</text>
+        </view>
+        <view class="footer-link" bind:tap="onPrivacy">
+          <text class="link-icon">🔒</text>
+          <text>隐私协议</text>
+          <text class="link-arrow">›</text>
+        </view>
+      </view>
+    </block>
   </view>
-</view>
 </scroll-view>
 
