@@ -1,118 +1,122 @@
 <navigation-bar title="AI看天气" back="{{false}}" color="black" background="#FFF"></navigation-bar>
 <scroll-view scroll-y="true" class="container">
-  <!-- 上半部分：当前天气信息 -->
-  <view class="weather-container">
-  <!-- 头部标题栏 -->
-  <view class="header">
-    <text class="title">实时天气</text>
-    <view class="location" bindtap="openCitySelector">
-      <text>{{selectedCity}}</text>
-      <text class="arrow">▼</text>
-    </view>
+  <view class="loading-container" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
   </view>
+  <block wx:else>
+    <!-- 上半部分：当前天气信息 -->
+    <view class="weather-container">
+      <!-- 头部标题栏 -->
+      <view class="header">
+        <text class="title">实时天气</text>
+        <view class="location" bindtap="openCitySelector">
+          <text>{{selectedCity}}</text>
+          <text class="arrow">▼</text>
+        </view>
+      </view>
 
-  <!-- 主要天气信息 -->
-  <view class="main-weather">
-    <view class="temperature-section">
-      <text class="temperature">{{currentTemp}}</text>
-      <view class="weather-desc">
-        <text>{{tempDescription}}</text>
-      </view>
-    </view>
-    
-    <!-- 预警和体感温度 - 保持一行 -->
-    <view class="alert-section">
-      <view class="alert-item">
-        <text class="alert-label">{{warning}}</text>
-      </view>
-      <view class="feels-like-item">
-        <text class="feels-like-label">体感温度</text>
-        <text class="feels-like-temp">{{feelsLike}}</text>
-      </view>
-    </view>
-  </view>
-
-  <!-- 九宫格天气详情 -->
-   <!-- 九宫格天气详情 -->
-   <view class="weather-grid">
-      <view class="grid-item">
-        <text class="grid-icon">☀️</text>
-        <text class="grid-label">天气状况</text>
-        <view class="grid-tag blue">{{weatherDetails.condition}}</view>
-      </view>
-      <view class="grid-item">
-        <text class="grid-icon">💧</text>
-        <text class="grid-label">湿度</text>
-        <view class="grid-tag blue">{{weatherDetails.humidity}}</view>
-      </view>
-      <view class="grid-item">
-        <text class="grid-icon">📊</text>
-        <text class="grid-label">气压</text>
-        <view class="grid-tag purple">{{weatherDetails.pressure}}</view>
-      </view>
-      <view class="grid-item">
-        <text class="grid-icon">🌞</text>
-        <text class="grid-label">UVI（紫外线）</text>
-        <view class="grid-tag yellow">{{weatherDetails.uvi}}</view>
-      </view>
-      <view class="grid-item">
-        <text class="grid-icon">💨</text>
-        <text class="grid-label">风速</text>
-        <view class="grid-tag green">{{weatherDetails.windSpeed}}</view>
-      </view>
-      <view class="grid-item">
-        <text class="grid-icon">🧭</text>
-        <text class="grid-label">风向</text>
-        <view class="grid-tag orange">{{weatherDetails.windDirection}}</view>
-      </view>
-      <view class="grid-item">
-        <text class="grid-icon">🌿</text>
-        <text class="grid-label">空气质量</text>
-        <view class="grid-tag green">{{aqi}}</view>
-      </view>
-      <view class="grid-item">
-        <text class="grid-icon">🌅</text>
-        <text class="grid-label">日出</text>
-        <view class="grid-tag orange">{{weatherDetails.sunrise}}</view>
-      </view>
-      <view class="grid-item">
-        <text class="grid-icon">🌇</text>
-        <text class="grid-label">日落</text>
-        <view class="grid-tag purple">{{weatherDetails.sunset}}</view>
-      </view>
-    </view>
-</view>
-    
-  
-  <!-- 下半部分：10日天气预报 -->
-  <view class="forecast-container">
-    <view class="forecast-header">
-      <view class="forecast-icon">
-        <text class="icon-calendar"></text>
-      </view>
-      <view class="forecast-title">10日天气预报</view>
-    </view>
-    
-    <view class="forecast-list">
-      <block wx:for="{{forecast}}" wx:key="date">
-        <view class="forecast-item">
-          <view class="day">{{item.day}}</view>
-          <view class="date">{{item.date}}</view>
-          <view class="weather-condition">{{item.condition}}</view>
-          <view class="weather-icon icon-{{item.icon}}">
-          </view>
-          <view class="temp-container">
-            <view class="low-temp">{{item.lowTemp}}</view>
-            <view class="temp-separator">~</view>
-            <view class="high-temp">{{item.highTemp}}</view>
-          </view>
-          <view class="wind-info">
-            <text class="wind-dir">{{item.windDir}}</text>
-            <text class="wind-level">{{item.windLevel}}级</text>
+      <!-- 主要天气信息 -->
+      <view class="main-weather">
+        <view class="temperature-section">
+          <text class="temperature">{{currentTemp}}</text>
+          <view class="weather-desc">
+            <text>{{tempDescription}}</text>
           </view>
         </view>
-      </block>
-      <view style="height: 90px;"></view>
+        
+        <!-- 预警和体感温度 - 保持一行 -->
+        <view class="alert-section">
+          <view class="alert-item">
+            <text class="alert-label">{{warning}}</text>
+          </view>
+          <view class="feels-like-item">
+            <text class="feels-like-label">体感温度</text>
+            <text class="feels-like-temp">{{feelsLike}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 九宫格天气详情 -->
+      <view class="weather-grid">
+        <view class="grid-item">
+          <text class="grid-icon">☀️</text>
+          <text class="grid-label">天气状况</text>
+          <view class="grid-tag blue">{{weatherDetails.condition}}</view>
+        </view>
+        <view class="grid-item">
+          <text class="grid-icon">💧</text>
+          <text class="grid-label">湿度</text>
+          <view class="grid-tag blue">{{weatherDetails.humidity}}</view>
+        </view>
+        <view class="grid-item">
+          <text class="grid-icon">📊</text>
+          <text class="grid-label">气压</text>
+          <view class="grid-tag purple">{{weatherDetails.pressure}}</view>
+        </view>
+        <view class="grid-item">
+          <text class="grid-icon">🌞</text>
+          <text class="grid-label">UVI（紫外线）</text>
+          <view class="grid-tag yellow">{{weatherDetails.uvi}}</view>
+        </view>
+        <view class="grid-item">
+          <text class="grid-icon">💨</text>
+          <text class="grid-label">风速</text>
+          <view class="grid-tag green">{{weatherDetails.windSpeed}}</view>
+        </view>
+        <view class="grid-item">
+          <text class="grid-icon">🧭</text>
+          <text class="grid-label">风向</text>
+          <view class="grid-tag orange">{{weatherDetails.windDirection}}</view>
+        </view>
+        <view class="grid-item">
+          <text class="grid-icon">🌿</text>
+          <text class="grid-label">空气质量</text>
+          <view class="grid-tag green">{{aqi}}</view>
+        </view>
+        <view class="grid-item">
+          <text class="grid-icon">🌅</text>
+          <text class="grid-label">日出</text>
+          <view class="grid-tag orange">{{weatherDetails.sunrise}}</view>
+        </view>
+        <view class="grid-item">
+          <text class="grid-icon">🌇</text>
+          <text class="grid-label">日落</text>
+          <view class="grid-tag purple">{{weatherDetails.sunset}}</view>
+        </view>
+      </view>
     </view>
-  </view>
+    
+    <!-- 下半部分：10日天气预报 -->
+    <view class="forecast-container">
+      <view class="forecast-header">
+        <view class="forecast-icon">
+          <text class="icon-calendar"></text>
+        </view>
+        <view class="forecast-title">10日天气预报</view>
+      </view>
+      
+      <view class="forecast-list">
+        <block wx:for="{{forecast}}" wx:key="date">
+          <view class="forecast-item">
+            <view class="day">{{item.day}}</view>
+            <view class="date">{{item.date}}</view>
+            <view class="weather-condition">{{item.condition}}</view>
+            <view class="weather-icon icon-{{item.icon}}">
+            </view>
+            <view class="temp-container">
+              <view class="low-temp">{{item.lowTemp}}</view>
+              <view class="temp-separator">~</view>
+              <view class="high-temp">{{item.highTemp}}</view>
+            </view>
+            <view class="wind-info">
+              <text class="wind-dir">{{item.windDir}}</text>
+              <text class="wind-level">{{item.windLevel}}级</text>
+            </view>
+          </view>
+        </block>
+        <view style="height: 90px;"></view>
+      </view>
+    </view>
+  </block>
 </scroll-view>

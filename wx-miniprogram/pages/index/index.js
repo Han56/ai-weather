@@ -8,6 +8,7 @@ Page({
     warning: "无",
     adcode: '',
     aqi: "50 优",
+    loading: true,
     weatherDetails: {
       condition: "晴天",
       humidity: "50%",
@@ -294,7 +295,6 @@ Page({
       title: '定位失败，尝试IP定位...',
       icon: 'none',
       duration: 2000
-      // complete: () => this._fallbackToIPLocation()
     });
   },
 
@@ -313,6 +313,8 @@ Page({
             console.log('逆地理编码结果:', res.data.result);
             const adcode = res.data.result.ad_info.adcode;
             console.log('区划代码:', adcode);
+            // 更新全局 adcode
+            getApp().globalData.adcode = adcode;
             // 返回包含城市名和adcode的对象
             resolve({
               city: res.data.result.address_component.city,
@@ -355,6 +357,7 @@ Page({
     }).finally(() => {
       wx.hideLoading();
       wx.stopPullDownRefresh();
+      this.setData({ loading: false });
     });
   },
 
