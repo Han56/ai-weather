@@ -101,4 +101,15 @@ public class WeatherServiceController {
         return weatherForecastService.limitInfo(cityId);
     }
 
+    /**
+     * AI推荐
+     *
+     * @param cityId,openId
+     */
+    @GetMapping("/ai_recommends")
+    @ResultFormat
+    public ServiceResult<AiClothingRecommendationsResponse> aiClothingRecommendationsServiceResult(@RequestParam String cityId, @RequestParam String openId){
+        return weatherForecastService.aiClothingRecommendations(cityId, openId);
+    }
+
 }

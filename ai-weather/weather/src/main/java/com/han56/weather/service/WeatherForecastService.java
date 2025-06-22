@@ -57,4 +57,11 @@ public interface WeatherForecastService {
     ServiceResult<LimitInfoMojiResponse> limitInfo(String cityId);
 
 
+    /**
+     * 服务9
+     * @param cityId
+     * */
+    ServiceResult<AiClothingRecommendationsResponse> aiClothingRecommendations(String cityId,String openId);
+
+
 }
