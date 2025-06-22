@@ -35,17 +35,17 @@ Page({
     ],
 
     ageOptions: [
-      { label: "7-12岁 儿童期", value: "child", range: "7-12" },
-      { label: "13-20岁 青年期", value: "teenager", range: "13-20" },
-      { label: "21-40岁 成年期", value: "adult", range: "21-40" },
-      { label: "41-65岁 中年期", value: "middle", range: "41-65" },
-      { label: "65岁以上 老年期", value: "senior", range: "65+" },
+      { label: "7-12岁", value: "child", range: "7-12" },
+      { label: "13-18岁", value: "teenager", range: "13-18" },
+      { label: "21-30岁", value: "adult", range: "21-30" },
+      { label: "31-40岁", value: "adult2", range: "31-40" },
+      { label: "41-65岁", value: "middle", range: "41-65" },
+      { label: "65岁以上", value: "senior", range: "65+" },
     ],
 
     countryOptions: [
       { label: "中国", value: "china" },
       { label: "美国", value: "usa" },
-      { label: "日本", value: "japan" },
       { label: "韩国", value: "korea" },
       { label: "英国", value: "uk" },
       { label: "法国", value: "france" },

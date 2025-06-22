@@ -1,5 +1,11 @@
 Page({
   data: {
+    showRecommendation: false,
+    generating: false,
+    outfitImageUrl: '',
+    recommendationText: '根据当前天气状况，建议着装偏向保暖舒适。',
+    recommendationTags: [],
+
     userPortrait: "",
     aiAdvice: {
       title: "今日穿搭建议",
@@ -26,8 +32,8 @@ Page({
       mask: true
     });
     
-    const appid = 'x';
-    const secret = 'x';
+    const appid = 'wx3e463a85be4880fc';
+    const secret = '412e616cfaa20f7612aac9012776062b';
     
     wx.login({
       success: (res) => {
@@ -39,6 +45,9 @@ Page({
             success: (loginRes) => {
               if (loginRes.data.openid) {
                 console.log('用户openid：', loginRes.data.openid);
+                // 存储到全局变量
+                const app = getApp()
+                app.globalData.openId = loginRes.data.openid
                 this.setData({
                   isLoggedIn: true,
                   openid: loginRes.data.openid
@@ -94,6 +103,133 @@ Page({
     });
   },
 
+  // 生成今日穿衣推荐
+  generateRecommendation: function() {
+    this.setData({ generating: true });
+    wx.showLoading({
+      title: '检查用户画像...',
+      mask: true,
+    });
+
+    // 首先检查用户是否已设置画像
+    const openId = this.data.openid;
+    if (!openId) {
+      wx.hideLoading();
+      this.setData({ generating: false });
+      wx.showToast({
+        title: '请先登录',
+        icon: 'none'
+      });
+      return;
+    }
+
+    // 请求用户画像设置信息接口来检查用户画像是否已设置
+    wx.request({
+      url: `http://127.0.0.1:8084/api/potraitSettingInfo/${openId}`,
+      method: 'GET',
+      success: (res) => {
+        if (res.data && res.statusCode === 200) {
+          // 用户已设置画像，继续生成推荐
+          this._generateRecommendationContent();
+        } else {
+          // 用户未设置画像，跳转到设置页面
+          wx.hideLoading();
+          this.setData({ generating: false });
+          wx.showModal({
+            title: '提示',
+            content: '请先完善您的用户画像，以获得更精准的AI穿衣推荐',
+            confirmText: '去设置',
+            cancelText: '取消',
+            success: (modalRes) => {
+              if (modalRes.confirm) {
+                wx.navigateTo({
+                  url: "/pages/portrait-settings/portrait-settings",
+                });
+              }
+            }
+          });
+        }
+      },
+      fail: (err) => {
+        console.error('检查用户画像失败：', err);
+        wx.hideLoading();
+        this.setData({ generating: false });
+        wx.showToast({
+          title: '网络请求失败',
+          icon: 'none'
+        });
+      }
+    });
+  },
+
+  // 生成推荐内容的具体逻辑
+  _generateRecommendationContent: function() {
+    wx.showLoading({
+      title: 'AI正在生成...',
+      mask: true,
+    });
+
+    const cityId = getApp().globalData.adcode;
+    const openId = this.data.openid;
+
+    if (!cityId) {
+      wx.hideLoading();
+      this.setData({ generating: false });
+      wx.showToast({
+        title: '请先在首页选择城市',
+        icon: 'none'
+      });
+      return;
+    }
+
+    wx.request({
+      url: 'http://127.0.0.1:8084/weather/ai_recommends',
+      method: 'GET',
+      data: {
+        cityId: cityId,
+        openId: openId
+      },
+      success: (res) => {
+        wx.hideLoading();
+        if (res.data.success && res.data.code === '200' && res.data.result) {
+          const result = res.data.result;
+          const clothingInfo = result.clothingInfo || {};
+          
+          const tags = [
+            clothingInfo.top,
+            clothingInfo.bottom,
+            clothingInfo.shoes,
+            ...(clothingInfo.accessories || [])
+          ].filter(tag => !!tag);
+
+          this.setData({
+            outfitImageUrl: result.imgUrl,
+            recommendationText: result.detailedRecommendation.content,
+            recommendationTags: tags,
+            showRecommendation: true,
+            generating: false,
+          });
+        } else {
+          this.setData({ generating: false });
+          wx.showToast({
+            title: res.data.message || 'AI推荐生成失败',
+            icon: 'none',
+            duration: 2000
+          });
+        }
+      },
+      fail: (err) => {
+        wx.hideLoading();
+        this.setData({ generating: false });
+        wx.showToast({
+          title: '网络请求失败',
+          icon: 'none'
+        });
+        console.error('Failed to generate recommendation:', err);
+      }
+    });
+  },
+
   // 获取生活指数
   getLiveIndex: function() {
     return new Promise((resolve, reject) => {
@@ -127,7 +263,7 @@ Page({
                 liveIndex: liveIndex
               });
               // 更新穿搭建议
-              this.updateDressAdvice();
+              // this.updateDressAdvice(); // 此处逻辑已由新的generateRecommendation接管
               resolve(res.data);
             } else {
               reject('获取生活指数失败');
@@ -161,7 +297,8 @@ Page({
     });
   },
 
-  // 根据生活指数更新穿搭建议
+  // 根据生活指数更新穿搭建议 (此功能现在由 generateRecommendation 处理，暂时注释或移除)
+  /*
   updateDressAdvice: function() {
     const listMap = this.data.liveIndex.listMap;
     const today = this.data.today;
@@ -210,6 +347,7 @@ Page({
       });
     }
   },
+  */
 
   // 联系我们
   onContact: () => {

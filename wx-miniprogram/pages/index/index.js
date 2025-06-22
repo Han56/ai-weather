@@ -130,7 +130,7 @@ Page({
   openCitySelector() {
     const key = 'MAHBZ-QQZLW-4KKRI-RIUZG-F5YEF-OFFH3';  //为腾讯位置服务key
     const referer = 'AI看天气';     // 必须填写应用名称
-    const hotCitys = '北京,上海,广州,深圳,哈尔滨'; // 自定义热门城市（最多12个）
+    const hotCitys = '北京,上海,广州,深圳,哈尔滨,呼和浩特,苏州,青岛,杭州'; // 自定义热门城市（最多12个）
 
     // console.log('url:'+`plugin://citySelector/index?key=${key}&referer=${referer}&hotCitys=${hotCitys}`)
 
@@ -147,12 +147,12 @@ Page({
         selectedCity: cityInfo.fullname || cityInfo.name,
         location: cityInfo.fullname || cityInfo.name
       });
-      // console.log('城市详细信息:', {
-      //   adcode: cityInfo.id,
-      //   pinyin: cityInfo.pinyin,
-      //   location: cityInfo.location
-      // });
-      this.getRealTimeWeather(cityInfo.id);
+      
+      // 更新全局adcode，以便其他页面（如AI穿搭）可以获取到
+      getApp().globalData.adcode = cityInfo.id;
+      console.log('当前city_id:'+cityInfo.id);
+      // 重新加载所有天气数据
+      this._loadAllWeatherData(cityInfo.id);
     }
   },
 
@@ -502,7 +502,7 @@ Page({
             if (alertData && alertData.length > 0) {
               warningText = alertData.map(alert => alert.type).join('\n');
             }
-            this.setData({ warning: warningText });
+            this.setData({ warning: warningText+'预警' });
             resolve(res.data);
           } else {
             reject('获取预警信息失败');
@@ -640,14 +640,14 @@ Page({
   _getPressureLevel: function(pressure){
     const pressureVal = parseFloat(pressure);
     if (isNaN(pressureVal)) return '';
-    if (pressureVal >= 1000 && pressureVal <= 1020) return '舒适';
-    if (pressureVal >= 980 && pressureVal <= 1000) return '轻微不适';
-    if (pressureVal >= 970 && pressureVal <= 980) return '头晕';
-    if (pressureVal >= 960 && pressureVal <= 970) return '头疼';
-    if (pressureVal >= 1020 && pressureVal <= 1030) return '呼吸畅快';
-    if (pressureVal <= 960) return '极度不适';
-    if (pressureVal >= 1030) return '呼吸困难';
-    return '';
+    if (pressureVal > 1018) return '耳痛头痛';
+    else if (pressureVal > 1013) return '头痛烦躁';   // 1013 < pressureVal <= 1018
+    else if (pressureVal >= 1008) return '敏感不适';  // 1008 <= pressureVal <= 1013
+    else if (pressureVal >= 1003) return '舒适';      // 1003 <= pressureVal < 1008
+    else if (pressureVal >= 998) return '疲倦低落';   // 998 <= pressureVal < 1003
+    else if (pressureVal >= 993) return '头痛嗜睡';   // 993 <= pressureVal < 998
+    else if (pressureVal >= 983) return '显著不适';   // 983 <= pressureVal < 993
+    else return '轻微不适';  
   },
 
   _getHumidityLevel: function(humidity){

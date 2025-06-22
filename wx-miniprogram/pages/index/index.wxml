@@ -93,7 +93,7 @@
         <view class="forecast-icon">
           <text class="icon-calendar"></text>
         </view>
-        <view class="forecast-title">10日天气预报</view>
+        <view class="forecast-title">未来10天-天气预报</view>
       </view>
       
       <view class="forecast-list">

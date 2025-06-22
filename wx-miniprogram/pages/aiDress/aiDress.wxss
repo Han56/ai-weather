@@ -7,13 +7,14 @@
   box-sizing: border-box;
 }
 
-/* 顶部图片区域 - 9:16比例 */
+/* 顶部图片区域 */
 .image-container {
   position: relative;
-  width: 100%;
-  padding-top: 60%; /* 从177.78%大幅减小到60% */
+  padding-top: 133%; /* 增加高度以展示更多图片内容 (4:3 竖向) */
+  margin: 20rpx;
+  border-radius: 20rpx;
   overflow: hidden;
-  margin: 0; /* 确保没有margin */
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.05);
 }
 
 .outfit-image {
@@ -128,6 +129,9 @@
 .profile-left {
   display: flex;
   align-items: center;
+  flex: 1; /* 占据可用空间 */
+  min-width: 0; /* 允许内容收缩以进行文本换行 */
+  margin-right: 20rpx; /* 在文本和按钮之间添加间距 */
 }
 
 .profile-icon {
@@ -164,12 +168,14 @@
 .profile-button {
   background-color: white;
   color: #a29bfe;
-  padding: 12rpx 30rpx;
+  padding: 10rpx 40rpx; /* 调整：高度减少，宽度增加 */
   border-radius: 30rpx;
   font-size: 26rpx;
   font-weight: 500;
   display: flex;
   align-items: center;
+  justify-content: center; /* 确保内容居中 */
+  white-space: nowrap; /* 防止文字换行 */
 }
 
 .profile-button .arrow {
@@ -456,4 +462,38 @@
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+/* 生成推荐按钮区域 */
+.generate-section {
+  background-color: #fff0f5; /* 淡粉色 */
+  padding: 80rpx 40rpx;
+  margin: 20rpx;
+  border-radius: 20rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 200rpx;
+}
+
+.generate-button {
+  background: linear-gradient(135deg, #a29bfe 0%, #fd79a8 100%);
+  color: white;
+  border-radius: 50rpx;
+  padding: 20rpx 60rpx;
+  font-size: 32rpx;
+  font-weight: 500;
+  border: none;
+  box-shadow: 0 8rpx 16rpx rgba(253, 121, 168, 0.3);
+  transition: all 0.2s ease;
+}
+
+.generate-button[loading] {
+  background: #ccc;
+  box-shadow: none;
+}
+
+.generate-button::after {
+  border: none;
 }
