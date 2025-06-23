@@ -50,7 +50,7 @@ public class WeatherForecastServiceImpl implements WeatherForecastService {
     private static final String MOJI_GATE_WAY_URL = "http://aliv18.mojicb.com";
 
     //APP-Code
-    private static final String APP_CODE = "a";
+    private static final String APP_CODE = "92918db90a2b4a00b63e0485cf803f7e";
 
     private WebClient webClient;
 
@@ -414,7 +414,7 @@ public class WeatherForecastServiceImpl implements WeatherForecastService {
         try {
             String url = "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions";
 
-            String apiKey = "a";
+            String apiKey = "sk-83512bc1351648b2bd30015e02d8aa7c";
 
             HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
             connection.setRequestMethod("POST");
@@ -479,10 +479,12 @@ public class WeatherForecastServiceImpl implements WeatherForecastService {
                         AiClothingRecommendationsResponse.ClothingInfo clothingInfo = recommendationsResponse.getClothingInfo();
                         String accessories = String.join(", ", clothingInfo.getAccessories());
                         String imagePrompt = String.format(
-                                "A full-body photograph of a person matching the description: (gender: %s, age: %s, ethnicity: %s, style: %s, " +
-                                        "country: %s, height: %s, weight: %s, hairStyle: %s). " +
-                                        "They are wearing a %s, %s, and %s. " +
-                                        "Accessories include: %s. The background is a %s. high quality, realistic, detailed.",
+                                "Help me generate a full-body photo of a character. It must be a complete full-body picture. " +
+                                        "The characteristics of this character are as follows:" +
+                                        "(Gender:%s,Age:%s,Race:%s,dressing style:%s," +
+                                        "Ethnicity:%s,Height:%s,Weight:%s,Hairstyle:%s). " +
+                                        "Wearing a  %s, %s,and %s. " +
+                                        "Other accessories include:%s.Picture background:%s.",
                                 potraitSettingInfo.getGender(),
                                 potraitSettingInfo.getAgeGroup(),
                                 potraitSettingInfo.getEthnicity(),
@@ -501,7 +503,7 @@ public class WeatherForecastServiceImpl implements WeatherForecastService {
 
                         // 2. 调用 Gitee 文生图 API
                         String giteeApiUrl = "https://ai.gitee.com/v1/images/generations";
-                        String giteeApiKey = "a";
+                        String giteeApiKey = "DESZ72NMD0JGIB4ZHSUKNLDY4GJIRSSVULODHC1X";
 
                         HttpURLConnection giteeConnection = (HttpURLConnection) new URL(giteeApiUrl).openConnection();
                         giteeConnection.setRequestMethod("POST");
@@ -511,7 +513,7 @@ public class WeatherForecastServiceImpl implements WeatherForecastService {
 
                         // 3. 构建请求体
                         Map<String, Object> giteePayload = new HashMap<>();
-                        giteePayload.put("model", "stable-diffusion-3.5-large-turbo");
+                        giteePayload.put("model", "flux-1-schnell");
                         giteePayload.put("prompt", imagePrompt);
                         giteePayload.put("size", "1024x1024");
                         giteePayload.put("user", null);
