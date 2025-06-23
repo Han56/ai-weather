@@ -35,28 +35,28 @@ Page({
     ],
 
     ageOptions: [
-      { label: "7-12岁", value: "child", range: "7-12" },
-      { label: "13-18岁", value: "teenager", range: "13-18" },
-      { label: "21-30岁", value: "adult", range: "21-30" },
-      { label: "31-40岁", value: "adult2", range: "31-40" },
-      { label: "41-65岁", value: "middle", range: "41-65" },
+      { label: "7-12岁", value: "child,7 to 12 years old", range: "7-12" },
+      { label: "13-18岁", value: "teenager,aged 13 to 18", range: "13-18" },
+      { label: "21-30岁", value: "adult,21-30 years old", range: "21-30" },
+      { label: "31-40岁", value: "adult,aged 31 to 40,", range: "31-40" },
+      { label: "41-65岁", value: "middle,aged 41 to 65", range: "41-65" },
       { label: "65岁以上", value: "senior", range: "65+" },
     ],
 
     countryOptions: [
-      { label: "中国", value: "china" },
-      { label: "美国", value: "usa" },
-      { label: "韩国", value: "korea" },
-      { label: "英国", value: "uk" },
-      { label: "法国", value: "france" },
-      { label: "德国", value: "germany" },
-      { label: "澳大利亚", value: "australia" },
-      { label: "加拿大", value: "canada" },
-      { label: "其他", value: "other" },
+      { label: "中国", value: "China" },
+      { label: "美国", value: "USA" },
+      { label: "韩国", value: "Korea" },
+      { label: "英国", value: "UK" },
+      { label: "法国", value: "France" },
+      { label: "德国", value: "Germany" },
+      { label: "澳大利亚", value: "Australia" },
+      { label: "加拿大", value: "Canada" },
+      { label: "其他", value: "China" },
     ],
 
     raceOptions: [
-      { label: "亚洲人", value: "asian" },
+      { label: "黄种人", value: "Yellow race" },
       { label: "白种人", value: "caucasian" },
       { label: "黑种人", value: "african" },
       { label: "混血", value: "mixed" },
@@ -65,42 +65,42 @@ Page({
 
     // 男性身高选项
     maleHeightOptions: [
-      { label: "150cm以下 偏矮", value: "very_short", range: "<150" },
-      { label: "150-160cm 较矮", value: "short", range: "150-160" },
-      { label: "160-170cm 中等偏矮", value: "medium_short", range: "160-170" },
-      { label: "170-180cm 中等", value: "medium", range: "170-180" },
-      { label: "180-190cm 较高", value: "tall", range: "180-190" },
-      { label: "190cm以上 很高", value: "very_tall", range: "190+" },
+      { label: "150厘米以下", value: "Less than 150 centimeters", range: "<150" },
+      { label: "150-160厘米", value: "150-160 centimeters", range: "150-160" },
+      { label: "160-170厘米", value: "160-170 centimeters", range: "160-170" },
+      { label: "170-180厘米", value: "170-180 centimeters", range: "170-180" },
+      { label: "180-190厘米", value: "180-190 centimeters", range: "180-190" },
+      { label: "190厘米以上", value: "More than 190 centimeters", range: "190+" },
     ],
 
     // 女性身高选项
     femaleHeightOptions: [
-      { label: "140cm以下 偏矮", value: "very_short", range: "<140" },
-      { label: "140-150cm 较矮", value: "short", range: "140-150" },
-      { label: "150-160cm 中等", value: "medium", range: "150-160" },
-      { label: "160-170cm 中等偏高", value: "medium_tall", range: "160-170" },
-      { label: "170-180cm 较高", value: "tall", range: "170-180" },
-      { label: "180cm以上 很高", value: "very_tall", range: "180+" },
+      { label: "140厘米以下", value: "Less than 140 centimeters", range: "<140" },
+      { label: "140-150厘米", value: "140-150 centimeters", range: "140-150" },
+      { label: "150-160厘米", value: "150-160 centimeters", range: "150-160" },
+      { label: "160-170厘米", value: "160-170 centimeters", range: "160-170" },
+      { label: "170-180厘米", value: "170-180 centimeters", range: "170-180" },
+      { label: "180厘米以上", value: "More than 180 centimeters", range: "180+" },
     ],
 
     // 男性体重选项
     maleWeightOptions: [
-      { label: "40-50kg 偏瘦", value: "underweight", range: "40-50" },
-      { label: "50-60kg 较瘦", value: "slim", range: "50-60" },
-      { label: "60-70kg 正常", value: "normal", range: "60-70" },
-      { label: "70-80kg 中等", value: "medium", range: "70-80" },
-      { label: "80-90kg 偏胖", value: "overweight", range: "80-90" },
-      { label: "90kg以上 肥胖", value: "obese", range: "90+" },
+      { label: "40-50kg", value: "40 to 50 kilograms", range: "40-50" },
+      { label: "50-60kg", value: "50 to 60 kilograms", range: "50-60" },
+      { label: "60-70kg", value: "60 to 70 kilograms", range: "60-70" },
+      { label: "70-80kg", value: "70 to 80 kilograms", range: "70-80" },
+      { label: "80-90kg", value: "80 to 90 kilograms", range: "80-90" },
+      { label: "90kg以上", value: "over 90 kilograms", range: "90+" },
     ],
 
     // 女性体重选项
     femaleWeightOptions: [
-      { label: "35-45kg 偏瘦", value: "underweight", range: "35-45" },
-      { label: "45-55kg 较瘦", value: "slim", range: "45-55" },
-      { label: "55-65kg 正常", value: "normal", range: "55-65" },
-      { label: "65-75kg 中等", value: "medium", range: "65-75" },
-      { label: "75-85kg 偏胖", value: "overweight", range: "75-85" },
-      { label: "85kg以上 肥胖", value: "obese", range: "85+" },
+      { label: "35-45kg", value: "35 to 45 kilograms", range: "35-45" },
+      { label: "45-55kg", value: "45 to 55 kilograms", range: "45-55" },
+      { label: "55-65kg", value: "55 to 65 kilograms", range: "55-65" },
+      { label: "65-75kg", value: "65-75 kilograms", range: "65-75" },
+      { label: "75-85kg", value: "75 to 85 kilograms", range: "75-85" },
+      { label: "85kg以上", value: "over 85 kilograms", range: "85+" },
     ],
 
     // 穿衣风格选项
@@ -206,76 +206,40 @@ Page({
             })
             return
           }
-          
-          // 根据label找到对应的value
-          const findValueByLabel = (options, label) => {
-            const option = options.find(item => item.label === label)
-            return option ? option.value : ""
+
+          // 直接用英文 value 回填
+          const formData = {
+            gender: data.gender || "",
+            age: data.ageGroup || "",
+            country: data.countryRegion || "",
+            race: data.ethnicity || "",
+            height: data.heightRange || "",
+            weight: data.weightRange || "",
+            styles: data.clothingStyle ? data.clothingStyle.split(',').filter(Boolean) : [],
+            accessories: data.accessoriesPreference ? data.accessoriesPreference.split(',').filter(Boolean) : [],
+            hairstyles: data.hairstylePreference ? [data.hairstylePreference] : [],
           }
 
-          // 先设置性别，这样会更新身高体重选项
-          const gender = findValueByLabel(this.data.genderOptions, data.gender)
+          // 选中状态
+          let styleStates = {}
+          formData.styles.forEach(val => { styleStates[val] = true })
+          let accessoryStates = {}
+          formData.accessories.forEach(val => { accessoryStates[val] = true })
+
           this.setData({
-            'formData.gender': gender
+            formData,
+            selectedStates: {
+              styles: styleStates,
+              accessories: accessoryStates
+            },
+            originalData: JSON.stringify(formData),
+            isModified: false
           }, () => {
-            // 更新身高体重选项
             this.updateHeightWeightOptions()
-
-            // 处理风格偏好数据
-            let styles = []
-            let styleStates = {}
-            if (data.clothingStyle && data.clothingStyle.trim()) {
-              const styleLabels = data.clothingStyle.split(',')
-              styles = styleLabels.map(label => {
-                const value = findValueByLabel(this.data.styleOptions, label.trim())
-                if (value) {
-                  styleStates[value] = true
-                }
-                return value
-              }).filter(Boolean)
-            }
-
-            // 处理饰品偏好数据
-            let accessories = []
-            let accessoryStates = {}
-            if (data.accessoriesPreference && data.accessoriesPreference.trim()) {
-              const accessoryLabels = data.accessoriesPreference.split(',')
-              accessories = accessoryLabels.map(label => {
-                const value = findValueByLabel(this.data.accessoryOptions, label.trim())
-                if (value) {
-                  accessoryStates[value] = true
-                }
-                return value
-              }).filter(Boolean)
-            }
-
-            // 转换后端数据为前端格式
-            const formData = {
-              gender: gender,
-              age: findValueByLabel(this.data.ageOptions, data.ageGroup),
-              country: findValueByLabel(this.data.countryOptions, data.countryRegion),
-              race: findValueByLabel(this.data.raceOptions, data.ethnicity),
-              height: findValueByLabel(this.data.currentHeightOptions, data.heightRange),
-              weight: findValueByLabel(this.data.currentWeightOptions, data.weightRange),
-              styles: styles,
-              accessories: accessories,
-              hairstyles: data.hairstylePreference ? [findValueByLabel(this.data.hairstyleOptions, data.hairstylePreference)].filter(Boolean) : [],
-            }
-
-            this.setData({
-              formData,
-              selectedStates: {
-                styles: styleStates,
-                accessories: accessoryStates
-              },
-              originalData: JSON.stringify(formData),
-              isModified: false
-            }, () => {
-              this.updatePickerIndexes()
-              console.log('当前styles:', this.data.formData.styles)
-              console.log('当前accessories:', this.data.formData.accessories)
-              console.log('当前选中状态:', this.data.selectedStates)
-            })
+            this.updatePickerIndexes()
+            console.log('当前styles:', this.data.formData.styles)
+            console.log('当前accessories:', this.data.formData.accessories)
+            console.log('当前选中状态:', this.data.selectedStates)
           })
         }
       },
@@ -556,23 +520,18 @@ Page({
       return
     }
 
-    // 准备请求数据
+    // 直接用 value 组装请求数据
     const requestData = {
       openId: openId,
-      gender: this.data.genderOptions.find(item => item.value === formData.gender)?.label || "",
-      ageGroup: this.data.ageOptions.find(item => item.value === formData.age)?.label || "",
-      countryRegion: this.data.countryOptions.find(item => item.value === formData.country)?.label || "",
-      ethnicity: this.data.raceOptions.find(item => item.value === formData.race)?.label || "",
-      heightRange: this.data.currentHeightOptions.find(item => item.value === formData.height)?.label || "",
-      weightRange: this.data.currentWeightOptions.find(item => item.value === formData.weight)?.label || "",
-      clothingStyle: formData.styles.map(style => 
-        this.data.styleOptions.find(item => item.value === style)?.label
-      ).filter(Boolean).join(','),
-      accessoriesPreference: formData.accessories.map(accessory => 
-        this.data.accessoryOptions.find(item => item.value === accessory)?.label
-      ).filter(Boolean).join(','),
-      hairstylePreference: formData.hairstyles.length > 0 ? 
-        this.data.hairstyleOptions.find(item => item.value === formData.hairstyles[0])?.label || "" : "",
+      gender: formData.gender,
+      ageGroup: formData.age,
+      countryRegion: formData.country,
+      ethnicity: formData.race,
+      heightRange: formData.height,
+      weightRange: formData.weight,
+      clothingStyle: formData.styles.join(','),
+      accessoriesPreference: formData.accessories.join(','),
+      hairstylePreference: formData.hairstyles.length > 0 ? formData.hairstyles[0] : '',
       adCode: adCode
     }
 
