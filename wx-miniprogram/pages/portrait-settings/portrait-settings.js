@@ -1,3 +1,5 @@
+const { baseUrl } = require('../../utils/config');
+
 Page({
   data: {
     // 表单数据
@@ -176,7 +178,7 @@ Page({
 
     // 调用后端接口获取数据
     wx.request({
-      url: `http://127.0.0.1:8084/api/potraitSettingInfo/${openId}`,
+      url: `${baseUrl}/api/potraitSettingInfo/${openId}`,
       method: 'GET',
       success: (res) => {
         if (res.statusCode === 200) {
@@ -542,7 +544,7 @@ Page({
     })
 
     // 根据originalData是否存在决定调用新增还是更新接口
-    const url = 'http://127.0.0.1:8084/api/potraitSettingInfo'
+    const url = `${baseUrl}/api/potraitSettingInfo`
     const method = originalData ? 'PUT' : 'POST'
 
     console.log('提交方法：', method)

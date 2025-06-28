@@ -1,3 +1,5 @@
+const { baseUrl } = require('../../utils/config');
+
 Page({
   data: {
     showRecommendation: false,
@@ -125,7 +127,7 @@ Page({
 
     // 请求用户画像设置信息接口来检查用户画像是否已设置
     wx.request({
-      url: `http://127.0.0.1:8084/api/potraitSettingInfo/${openId}`,
+      url: `${baseUrl}/api/potraitSettingInfo/${openId}`,
       method: 'GET',
       success: (res) => {
         if (res.data && res.statusCode === 200) {
@@ -183,7 +185,7 @@ Page({
     }
 
     wx.request({
-      url: 'http://127.0.0.1:8084/weather/ai_recommends',
+      url: `${baseUrl}/weather/ai_recommends`,
       method: 'GET',
       data: {
         cityId: cityId,
@@ -199,7 +201,6 @@ Page({
             clothingInfo.top,
             clothingInfo.bottom,
             clothingInfo.shoes,
-            ...(clothingInfo.accessories || [])
           ].filter(tag => !!tag);
 
           this.setData({
@@ -240,7 +241,7 @@ Page({
       }
 
       wx.request({
-        url: 'http://127.0.0.1:8084/weather/live_index',
+        url: `${baseUrl}/weather/live_index`,
         method: 'GET',
         data: { cityId: adcode },
         success: (res) => {

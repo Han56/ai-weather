@@ -1,7 +1,8 @@
 App({
   globalData: {
     adcode: '230100', // 默认哈尔滨市的adcode
-    userInfo: null
+    userInfo: null,
+    openId: null // 添加openId字段
   },
   onLaunch: function () {
     // 展示本地存储能力

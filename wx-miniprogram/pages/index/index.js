@@ -1,4 +1,5 @@
 const citySelector = requirePlugin('citySelector');
+const { baseUrl } = require('../../utils/config');
 Page({
   data: {
     location: "哈尔滨市",
@@ -413,7 +414,7 @@ Page({
       }
 
       wx.request({
-        url: `http://127.0.0.1:8084/weather/real_time_weather`,
+        url: `${baseUrl}/weather/real_time_weather`,
         method: 'GET',
         data: { cityId: adcode },
         success: (res) => {
@@ -455,7 +456,7 @@ Page({
       }
 
       wx.request({
-        url: `http://127.0.0.1:8084/weather/aqi_real_time`,
+        url: `${baseUrl}/weather/aqi_real_time`,
         method: 'GET',
         data: { cityId: adcode },
         success: (res) => {
@@ -492,7 +493,7 @@ Page({
       }
 
       wx.request({
-        url: `http://127.0.0.1:8084/weather/weather_alert`,
+        url: `${baseUrl}/weather/weather_alert`,
         method: 'GET',
         data: { cityId: adcode },
         success: (res) => {
@@ -522,7 +523,7 @@ Page({
       }
 
       wx.request({
-        url: `http://127.0.0.1:8084/weather/forecast_15days_weather`,
+        url: `${baseUrl}/weather/forecast_15days_weather`,
         method: 'GET',
         data: { cityId: adcode },
         success: (res) => {
