@@ -1,8 +1,10 @@
 package com.han56.weather.controller;
 
+import com.han56.weather.annotation.RateLimited;
 import com.han56.weather.annotation.ResultFormat;
 import com.han56.weather.models.response.*;
 import com.han56.weather.service.WeatherForecastService;
+import com.han56.weather.utils.RedisUtil;
 import com.han56.weather.utils.ServiceResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/weather")
 public class WeatherServiceController {
@@ -20,6 +25,9 @@ public class WeatherServiceController {
 
     @Autowired
     private WeatherForecastService weatherForecastService;
+
+    @Autowired
+    private RedisUtil redisUtil;
 
     /**
      * AQI预报5天服务
@@ -108,8 +116,34 @@ public class WeatherServiceController {
      */
     @GetMapping("/ai_recommends")
     @ResultFormat
+    @RateLimited(limit = 10, type = RateLimited.RateLimitType.DAILY, message = "AI推荐服务每日限流10次，请明天再试")
     public ServiceResult<AiClothingRecommendationsResponse> aiClothingRecommendationsServiceResult(@RequestParam String cityId, @RequestParam String openId){
         return weatherForecastService.aiClothingRecommendations(cityId, openId);
+    }
+
+    /**
+     * 查询AI推荐图片状态
+     *
+     * @param cityId,openId
+     */
+    @GetMapping("/ai_recommends_status")
+    @ResultFormat
+    public ServiceResult<Map<String, Object>> aiRecommendStatus(@RequestParam String cityId, @RequestParam String openId){
+        String cacheKey = String.format("ai_recommend:%s:%s", cityId, openId);
+        Object cachedResult = redisUtil.get(cacheKey);
+        
+        Map<String, Object> status = new HashMap<>();
+        if (cachedResult != null) {
+            AiClothingRecommendationsResponse response = (AiClothingRecommendationsResponse) cachedResult;
+            status.put("hasRecommendation", true);
+            status.put("hasImage", response.getImgUrl() != null && !response.getImgUrl().isEmpty());
+            status.put("recommendation", response);
+        } else {
+            status.put("hasRecommendation", false);
+            status.put("hasImage", false);
+        }
+        
+        return ServiceResult.success(status);
     }
 
 }

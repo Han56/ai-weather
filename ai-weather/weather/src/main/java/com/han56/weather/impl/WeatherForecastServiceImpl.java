@@ -5,9 +5,11 @@ import com.alibaba.fastjson2.JSONObject;
 import com.han56.weather.models.entity.ForecastHourly;
 import com.han56.weather.models.entity.PotraitSettingInfo;
 import com.han56.weather.models.response.*;
+import com.han56.weather.annotation.PerformanceMonitor;
 import com.han56.weather.service.CityMappingService;
 import com.han56.weather.service.PotraitSettingInfoService;
 import com.han56.weather.service.WeatherForecastService;
+import com.han56.weather.utils.RedisUtil;
 import com.han56.weather.utils.ServiceResult;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutException;
@@ -35,10 +37,12 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -59,6 +63,9 @@ public class WeatherForecastServiceImpl implements WeatherForecastService {
 
     @Autowired
     private PotraitSettingInfoService potraitSettingInfoService;
+
+    @Autowired
+    private RedisUtil redisUtil;
 
     // 预热接口配置
     private static final List<WarmupEndpoint> WARMUP_ENDPOINTS = Arrays.asList(
@@ -342,121 +349,152 @@ public class WeatherForecastServiceImpl implements WeatherForecastService {
     }
 
     @Override
+    @PerformanceMonitor(description = "AI穿衣推荐服务", slowThreshold = 3000, logParams = true)
     public ServiceResult<AiClothingRecommendationsResponse> aiClothingRecommendations(String cityId, String openId) {
-        //通过cituId获取fid
-        String fid = cityMappingService.getFidsByDivisionCode(Integer.valueOf(cityId)).get(0).toString();
-
-        //通过fid请求未来24小时天气情况
-        Mono<String> resultString = webClient.post()
-                .uri("/whapi/json/alicityweather/forecast24hours?cityId={0}&token={1}"
-                        ,fid,"008d2ad9197090c5dddc76f583616606")
-                .header("Authorization","APPCODE "+APP_CODE)
-                .accept(MediaType.APPLICATION_JSON)
-                .retrieve()
-                .bodyToMono(String.class)
-                .doOnError(e->{
-                    logger.error("[Moji],call Weather forecast 24h service  error!",e);
-                })
-                .onErrorResume(e-> Mono.empty());
-
-        ForecastHourlyMojiResponse forecastHourlyMojiResponse = JSON.parseObject(resultString.block(),
-                ForecastHourlyMojiResponse.class);
-
-        //拿到未来十小时天气情况
-        List<ForecastHourly> forecastHourlyList = forecastHourlyMojiResponse.getForecastHourlyMojiData().getForecastHourlyList();
-        int size = forecastHourlyList.size();
-        List<ForecastHourly> firstTenHourList = size >= 10 ? forecastHourlyList.subList(0, 10) : forecastHourlyList;
-
-        String firstTenHourListString = JSON.toJSONString(firstTenHourList);
-
-        String futureTenHourDetailWeather = "未来10个小时的天气情况：" + firstTenHourListString;
-
-        //拼接提示词
-        String textSysPrompt = "# 角色\n" +
-                "你是一个天气专家与穿衣搭配推荐专家。\n" +
-                "## 任务\n" +
-                "你要根据给到的当天未来10小时天气情况、人物画像以及所在城市给出最合理的穿衣搭配方案，并以JSON格式输出。\n" +
-                "## 限制\n" +
-                "- 只输出符合指定JSON结构的最终结果，不输出任何额外信息、注释或思考过程。\n" +
-                "- 推荐的衣物要贴合日常生活和工作通勤场景。\n" +
-                "- 禁止出现色情类型的衣物推荐。\n" +
-                "- `detailed_recommendation.content` 的内容要尽量简短，不超过100个词，并且必须和`clothing_info`中提到的衣物保持一致。" +
-                "#输出格式\n" +
-                "{\n" +
-                "  \"clothing_info\": {\n" +
-                "    \"top\": \"白色T恤\",\n" +
-                "    \"bottom\": \"牛仔裤\",\n" +
-                "    \"shoes\": \"运动鞋\",\n" +
-                "    \"accessories\": [\"太阳镜\", \"棒球帽\"],\n" +
-                "    \"background\": \"城市街道\"\n" +
-                "  },\n" +
-                "  \"detailed_recommendation\": {\n" +
-                "    \"title\": \"今日穿搭推荐\",\n" +
-                "    \"content\": \"根据今天晴朗的天气，推荐穿着舒适简约风格。上身搭配白色T恤，下身穿着经典的蓝色牛仔裤，脚蹬一双白色运动鞋，既舒适又时尚。搭配太阳镜和棒球帽，为整体造型增添活力感，背景选择城市街道，展现都市休闲风格。\"\n" +
-                "  }\n" +
-                "}";
-
-        //根据openid获取用户画像
-        PotraitSettingInfo potraitSettingInfo = potraitSettingInfoService.selectByOpenId(openId);
-
-        //组装 user 提示词
-        String userPotraitSettingString = "性别：" + potraitSettingInfo.getGender() + "，年龄段：" + potraitSettingInfo.getAgeGroup() +
-                "，国籍：" + potraitSettingInfo.getCountryRegion() + "，人种：" + potraitSettingInfo.getEthnicity() +
-                "，体重范围：" + potraitSettingInfo.getWeightRange() + "，身高范围：" + potraitSettingInfo.getHeightRange() +
-                "，穿衣风格：" + potraitSettingInfo.getClothingStyle() + "，配饰：" + potraitSettingInfo.getAccessoriesPreference() +
-                "，发型：" + potraitSettingInfo.getHairstylePreference();
-
-        String textUserPrompt = "根据长沙未来 10 小时的天气情况以及人物画像给出穿衣搭配方案。" +
-                "人物画像：" + userPotraitSettingString +
-                "未来10小时天气情况：" + futureTenHourDetailWeather;
-
-        //请求文生文大模型
+        long startTime = System.currentTimeMillis();
         try {
+            // 1. 快速缓存检查
+            String cacheKey = String.format("ai_recommend:%s:%s", cityId, openId);
+            Object cachedResult = redisUtil.get(cacheKey);
+            if (cachedResult != null) {
+                logger.info("缓存命中，耗时={}ms", System.currentTimeMillis() - startTime);
+                return ServiceResult.success((AiClothingRecommendationsResponse) cachedResult);
+            }
+
+            // 2. 并行获取数据
+            CompletableFuture<String> fidFuture = CompletableFuture.supplyAsync(() -> getFidByCityId(cityId));
+            CompletableFuture<PotraitSettingInfo> portraitFuture = CompletableFuture.supplyAsync(() -> {
+                String cacheKey2 = "user:" + openId;
+                Object cached = redisUtil.get(cacheKey2);
+                if (cached != null) return (PotraitSettingInfo) cached;
+                
+                PotraitSettingInfo potrait = potraitSettingInfoService.selectByOpenId(openId);
+                if (potrait != null) redisUtil.set(cacheKey2, potrait, 1800);
+                return potrait;
+            });
+
+            // 等待并行任务完成
+            String fid = fidFuture.get(5, TimeUnit.SECONDS);
+            PotraitSettingInfo potrait = portraitFuture.get(5, TimeUnit.SECONDS);
+            
+            if (fid == null || potrait == null) {
+                logger.warn("数据获取失败, fid={}, potrait={}", fid != null, potrait != null);
+                return null;
+            }
+
+            // 3. 获取天气数据（带缓存）
+            List<ForecastHourly> weatherList = getWeatherData(fid);
+            if (weatherList == null || weatherList.isEmpty()) {
+                logger.warn("天气数据获取失败");
+                return null;
+            }
+
+            // 4. 快速AI推荐（简化提示词）
+            AiClothingRecommendationsResponse rec = getQuickRecommendation(potrait, weatherList);
+            if (rec == null) {
+                logger.warn("AI推荐生成失败");
+                return null;
+            }
+
+            // 5. 先缓存文案结果（不包含图片）
+            redisUtil.set(cacheKey, rec, 900);
+
+            // 6. 异步生成图片（不阻塞主流程）
+            generateImageAsync(rec, potrait, cacheKey);
+
+            logger.info("AI推荐完成，总耗时={}ms", System.currentTimeMillis() - startTime);
+            return ServiceResult.success(rec);
+        } catch (Exception e) {
+            logger.error("aiClothingRecommendations error", e);
+            return null;
+        }
+    }
+
+    /**
+     * 获取天气数据
+     */
+    private List<ForecastHourly> getWeatherData(String fid) {
+        String cacheKey = "weather:" + fid;
+        Object cached = redisUtil.get(cacheKey);
+        if (cached != null) {
+            return (List<ForecastHourly>) cached;
+        }
+        
+        try {
+            Mono<String> resultString = webClient.post()
+                    .uri("/whapi/json/alicityweather/forecast24hours?cityId={0}&token={1}", fid, "008d2ad9197090c5dddc76f583616606")
+                    .header("Authorization", "APPCODE " + APP_CODE)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .timeout(Duration.ofSeconds(10))
+                    .doOnError(e -> logger.error("天气API调用失败", e))
+                    .onErrorResume(e -> Mono.empty());
+
+            String response = resultString.block(Duration.ofSeconds(15));
+            if (response != null) {
+                ForecastHourlyMojiResponse forecastResponse = JSON.parseObject(response, ForecastHourlyMojiResponse.class);
+                List<ForecastHourly> weatherList = forecastResponse.getForecastHourlyMojiData().getForecastHourlyList();
+                if (weatherList != null && !weatherList.isEmpty()) {
+                    // 只取前5小时数据，减少处理量
+                    List<ForecastHourly> result = weatherList.size() >= 5 ? weatherList.subList(0, 5) : weatherList;
+                    redisUtil.set(cacheKey, result, 900);
+                    return result;
+                }
+            }
+        } catch (Exception e) {
+            logger.error("getWeatherData error", e);
+        }
+        return null;
+    }
+
+    /**
+     * 快速AI推荐（简化版）
+     */
+    private AiClothingRecommendationsResponse getQuickRecommendation(PotraitSettingInfo potrait, List<ForecastHourly> weatherList) {
+        try {
+            // 简化的提示词
+            String simplePrompt = buildSimplePrompt(potrait, weatherList);
+            
             String url = "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions";
-
             String apiKey = "sk-83512bc1351648b2bd30015e02d8aa7c";
-
             HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Authorization", "Bearer " + apiKey);
             connection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
             connection.setDoOutput(true);
-
-            // 构造请求体
-            Map<String, Object> payload = new java.util.HashMap<>();
-            payload.put("model", "qwen2.5-32b-instruct");
-
-            java.util.List<Map<String, String>> messages = new java.util.ArrayList<>();
-            Map<String, String> systemMessage = new java.util.HashMap<>();
-            systemMessage.put("role", "system");
-            systemMessage.put("content", textSysPrompt);
-            messages.add(systemMessage);
-
-            Map<String, String> userMessage = new java.util.HashMap<>();
-            userMessage.put("role", "user");
-            userMessage.put("content", textUserPrompt);
-            messages.add(userMessage);
-
-            payload.put("messages", messages);
             
-            Map<String, String> responseFormat = new java.util.HashMap<>();
+            // 更短的超时时间
+            connection.setConnectTimeout(5000);  // 5秒连接超时
+            connection.setReadTimeout(15000);    // 15秒读取超时
+
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("model", "qwen2.5-32b-instruct");
+            payload.put("max_tokens", 500);  // 限制输出长度
+            
+            List<Map<String, String>> messages = new ArrayList<>();
+            Map<String, String> systemMessage = new HashMap<>();
+            systemMessage.put("role", "system");
+            systemMessage.put("content", "你是一个穿衣搭配专家。根据天气和用户特征给出简洁的穿衣建议，以JSON格式输出。请严格按照以下格式输出：{\"clothing_info\": {\"top\": \"上衣\", \"bottom\": \"下装\", \"shoes\": \"鞋子\", \"accessories\": [\"配饰1\", \"配饰2\"], \"background\": \"背景\"}, \"detailed_recommendation\": {\"title\": \"推荐标题\", \"content\": \"推荐内容\"}}");
+            messages.add(systemMessage);
+            
+            Map<String, String> userMessage = new HashMap<>();
+            userMessage.put("role", "user");
+            userMessage.put("content", simplePrompt);
+            messages.add(userMessage);
+            
+            payload.put("messages", messages);
+            Map<String, String> responseFormat = new HashMap<>();
             responseFormat.put("type", "json_object");
             payload.put("response_format", responseFormat);
-
+            
             String jsonInputString = JSON.toJSONString(payload);
-
-
-            // 发送请求
             try (OutputStream os = connection.getOutputStream()) {
                 byte[] input = jsonInputString.getBytes("utf-8");
                 os.write(input, 0, input.length);
             }
-
-            // 获取响应码
+            
             int responseCode = connection.getResponseCode();
-            logger.info("LLM API Response Code: " + responseCode);
-
-            // 处理响应
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 try (BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"))) {
                     StringBuilder response = new StringBuilder();
@@ -465,120 +503,254 @@ public class WeatherForecastServiceImpl implements WeatherForecastService {
                         response.append(responseLine.trim());
                     }
                     String responseBody = response.toString();
-                    logger.info("[DashScope] LLM API Response Body: {}", responseBody);
-
                     JSONObject llmResponse = JSON.parseObject(responseBody);
-                    // 兼容OpenAI格式的响应，直接从根对象获取 "choices"
                     String content = llmResponse.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
-
-                    AiClothingRecommendationsResponse recommendationsResponse = JSON.parseObject(content, AiClothingRecommendationsResponse.class);
-
-                    //继续请求文生图模型
+                    
+                    // 尝试解析AI返回的JSON
                     try {
-                        // 1. 根据文生文结果构建图片生成prompt
-                        AiClothingRecommendationsResponse.ClothingInfo clothingInfo = recommendationsResponse.getClothingInfo();
-                        String accessories = String.join(", ", clothingInfo.getAccessories());
-                        String imagePrompt = String.format(
-                                "Help me generate a full-body photo of a character. It must be a complete full-body picture. " +
-                                        "The characteristics of this character are as follows:" +
-                                        "(Gender:%s,Age:%s,Race:%s,dressing style:%s," +
-                                        "Ethnicity:%s,Height:%s,Weight:%s,Hairstyle:%s). " +
-                                        "Wearing a  %s, %s,and %s. " +
-                                        "Other accessories include:%s.Picture background:%s.",
-                                potraitSettingInfo.getGender(),
-                                potraitSettingInfo.getAgeGroup(),
-                                potraitSettingInfo.getEthnicity(),
-                                potraitSettingInfo.getClothingStyle(),
-                                potraitSettingInfo.getCountryRegion(),
-                                potraitSettingInfo.getHeightRange(),
-                                potraitSettingInfo.getWeightRange(),
-                                potraitSettingInfo.getHairstylePreference(),
-                                clothingInfo.getTop(),
-                                clothingInfo.getBottom(),
-                                clothingInfo.getShoes(),
-                                accessories,
-                                clothingInfo.getBackground()
-                        );
-                        logger.info("[GiteeImageGen] Prompt: {}", imagePrompt);
-
-                        // 2. 调用 Gitee 文生图 API
-                        String giteeApiUrl = "https://ai.gitee.com/v1/images/generations";
-                        String giteeApiKey = "DESZ72NMD0JGIB4ZHSUKNLDY4GJIRSSVULODHC1X";
-
-                        HttpURLConnection giteeConnection = (HttpURLConnection) new URL(giteeApiUrl).openConnection();
-                        giteeConnection.setRequestMethod("POST");
-                        giteeConnection.setRequestProperty("Authorization", "Bearer " + giteeApiKey);
-                        giteeConnection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
-                        giteeConnection.setDoOutput(true);
-
-                        // 3. 构建请求体
-                        Map<String, Object> giteePayload = new HashMap<>();
-                        giteePayload.put("model", "flux-1-schnell");
-                        giteePayload.put("prompt", imagePrompt);
-                        giteePayload.put("size", "1024x1024");
-                        giteePayload.put("user", null);
-                        giteePayload.put("n", 1);
-                        giteePayload.put("response_format", "url");
-
-                        String giteeJsonInputString = JSON.toJSONString(giteePayload);
-
-                        try (OutputStream os = giteeConnection.getOutputStream()) {
-                            byte[] inputBytes = giteeJsonInputString.getBytes("utf-8");
-                            os.write(inputBytes, 0, inputBytes.length);
-                        }
-
-                        // 4. 处理响应
-                        int giteeResponseCode = giteeConnection.getResponseCode();
-                        logger.info("[GiteeImageGen] API Response Code: {}", giteeResponseCode);
-                        if (giteeResponseCode == HttpURLConnection.HTTP_OK) {
-                            try (BufferedReader giteeIn = new BufferedReader(new InputStreamReader(giteeConnection.getInputStream(), "utf-8"))) {
-                                StringBuilder giteeResponse = new StringBuilder();
-                                String line;
-                                while ((line = giteeIn.readLine()) != null) {
-                                    giteeResponse.append(line.trim());
-                                }
-                                String giteeResponseBody = giteeResponse.toString();
-                                logger.info("[GiteeImageGen] API Response Body: {}", giteeResponseBody);
-
-                                JSONObject imageResponse = JSON.parseObject(giteeResponseBody);
-                                String imageUrl = imageResponse.getJSONArray("data").getJSONObject(0).getString("url");
-                                recommendationsResponse.setImgUrl(imageUrl);
-                                logger.info("[GiteeImageGen] Image URL received: {}", imageUrl);
-                            }
-                        } else {
-                            try (BufferedReader errorStream = new BufferedReader(new InputStreamReader(giteeConnection.getErrorStream(), "utf-8"))) {
-                                StringBuilder errorResponse = new StringBuilder();
-                                String line;
-                                while ((line = errorStream.readLine()) != null) {
-                                    errorResponse.append(line.trim());
-                                }
-                                logger.error("[GiteeImageGen] API request failed with code {}: {}", giteeResponseCode, errorResponse.toString());
-                            }
-                        }
-
-                    } catch (IOException e) {
-                        logger.error("[GiteeImageGen] Image generation process failed.", e);
+                        return JSON.parseObject(content, AiClothingRecommendationsResponse.class);
+                    } catch (Exception e) {
+                        logger.warn("AI返回的JSON格式不标准，尝试修复: {}", content);
+                        return fixAiResponse(content);
                     }
-
-                    return ServiceResult.success(recommendationsResponse);
                 }
             } else {
-                try (BufferedReader in = new BufferedReader(new InputStreamReader(connection.getErrorStream(), "utf-8"))) {
-                    StringBuilder response = new StringBuilder();
-                    String responseLine;
-                    while ((responseLine = in.readLine()) != null) {
-                        response.append(responseLine.trim());
-                    }
-                    logger.error("[DashScope] AI recommendations failed with code {}: {}", responseCode, response.toString());
-                }
+                logger.error("AI API调用失败，状态码: {}", responseCode);
             }
-
-            // 关闭连接
             connection.disconnect();
-
-        } catch (IOException e) {
-            logger.error("[DashScope] AI recommendations request exception", e);
+        } catch (Exception e) {
+            logger.error("getQuickRecommendation error", e);
         }
         return null;
+    }
+
+    /**
+     * 修复AI返回的JSON格式问题
+     */
+    private AiClothingRecommendationsResponse fixAiResponse(String aiContent) {
+        try {
+            JSONObject jsonObject = JSON.parseObject(aiContent);
+            
+            AiClothingRecommendationsResponse response = new AiClothingRecommendationsResponse();
+            
+            // 处理clothing_info
+            if (jsonObject.containsKey("clothing_info")) {
+                JSONObject clothingInfoJson = jsonObject.getJSONObject("clothing_info");
+                AiClothingRecommendationsResponse.ClothingInfo clothingInfo = new AiClothingRecommendationsResponse.ClothingInfo();
+                
+                clothingInfo.setTop(clothingInfoJson.getString("top"));
+                clothingInfo.setBottom(clothingInfoJson.getString("bottom"));
+                clothingInfo.setShoes(clothingInfoJson.getString("shoes"));
+                clothingInfo.setBackground(clothingInfoJson.getString("background"));
+                
+                // 处理accessories
+                Object accessoriesObj = clothingInfoJson.get("accessories");
+                if (accessoriesObj instanceof List) {
+                    clothingInfo.setAccessories((List<String>) accessoriesObj);
+                } else if (accessoriesObj instanceof String) {
+                    String accessoriesStr = (String) accessoriesObj;
+                    if ("无".equals(accessoriesStr) || "none".equalsIgnoreCase(accessoriesStr)) {
+                        clothingInfo.setAccessories(new ArrayList<>());
+                    } else {
+                        clothingInfo.setAccessories(Arrays.asList(accessoriesStr.split(",")));
+                    }
+                } else {
+                    clothingInfo.setAccessories(new ArrayList<>());
+                }
+                
+                response.setClothingInfo(clothingInfo);
+            }
+            
+            // 处理detailed_recommendation
+            if (jsonObject.containsKey("detailed_recommendation")) {
+                Object detailedObj = jsonObject.get("detailed_recommendation");
+                AiClothingRecommendationsResponse.DetailedRecommendation detailedRecommendation = new AiClothingRecommendationsResponse.DetailedRecommendation();
+                
+                if (detailedObj instanceof JSONObject) {
+                    JSONObject detailedJson = (JSONObject) detailedObj;
+                    detailedRecommendation.setTitle(detailedJson.getString("title"));
+                    detailedRecommendation.setContent(detailedJson.getString("content"));
+                } else if (detailedObj instanceof String) {
+                    // 如果detailed_recommendation是字符串，将其作为content
+                    detailedRecommendation.setTitle("今日穿搭推荐");
+                    detailedRecommendation.setContent((String) detailedObj);
+                }
+                
+                response.setDetailedRecommendation(detailedRecommendation);
+            }
+            
+            return response;
+        } catch (Exception e) {
+            logger.error("修复AI响应失败", e);
+            return createDefaultResponse();
+        }
+    }
+
+    /**
+     * 创建默认响应
+     */
+    private AiClothingRecommendationsResponse createDefaultResponse() {
+        AiClothingRecommendationsResponse response = new AiClothingRecommendationsResponse();
+        
+        // 创建默认的clothing_info
+        AiClothingRecommendationsResponse.ClothingInfo clothingInfo = new AiClothingRecommendationsResponse.ClothingInfo();
+        clothingInfo.setTop("白色T恤");
+        clothingInfo.setBottom("牛仔裤");
+        clothingInfo.setShoes("运动鞋");
+        clothingInfo.setAccessories(new ArrayList<>());
+        clothingInfo.setBackground("城市街道");
+        response.setClothingInfo(clothingInfo);
+        
+        // 创建默认的detailed_recommendation
+        AiClothingRecommendationsResponse.DetailedRecommendation detailedRecommendation = new AiClothingRecommendationsResponse.DetailedRecommendation();
+        detailedRecommendation.setTitle("今日穿搭推荐");
+        detailedRecommendation.setContent("根据当前天气情况，推荐穿着舒适简约的搭配。上身选择白色T恤，下身搭配牛仔裤，脚蹬运动鞋，既舒适又时尚。");
+        response.setDetailedRecommendation(detailedRecommendation);
+        
+        return response;
+    }
+
+    /**
+     * 构建简化提示词
+     */
+    private String buildSimplePrompt(PotraitSettingInfo potrait, List<ForecastHourly> weatherList) {
+        // 只取第一个天气数据
+        ForecastHourly weather = weatherList.get(0);
+        
+        String userInfo = String.format("用户：%s，%s，%s，%s", 
+            potrait.getGender(), potrait.getAgeGroup(), potrait.getClothingStyle(), potrait.getCountryRegion());
+        
+        String weatherInfo = String.format("天气：%s，温度%s°C，%s", 
+            weather.getCondition(), weather.getTemp(), weather.getWindDir());
+        
+        return String.format("根据以下信息给出穿衣建议：%s。%s。请以JSON格式输出，包含clothing_info和detailed_recommendation字段。", 
+            userInfo, weatherInfo);
+    }
+
+    /**
+     * 异步生成图片
+     */
+    private void generateImageAsync(AiClothingRecommendationsResponse rec, PotraitSettingInfo potrait, String cacheKey) {
+        CompletableFuture.runAsync(() -> {
+            try {
+                long imageStartTime = System.currentTimeMillis();
+                String imgUrl = generateClothingImage(rec, potrait);
+                if (imgUrl != null) {
+                    rec.setImgUrl(imgUrl);
+                    // 更新缓存（包含图片）
+                    redisUtil.set(cacheKey, rec, 900);
+                    logger.info("异步图片生成成功，耗时={}ms, url={}", 
+                        System.currentTimeMillis() - imageStartTime, imgUrl);
+                } else {
+                    logger.warn("异步图片生成失败");
+                }
+            } catch (Exception e) {
+                logger.error("异步图片生成异常", e);
+            }
+        });
+    }
+
+    /**
+     * 生成穿衣图片
+     */
+    private String generateClothingImage(AiClothingRecommendationsResponse rec, PotraitSettingInfo potrait) {
+        try {
+            AiClothingRecommendationsResponse.ClothingInfo clothingInfo = rec.getClothingInfo();
+            if (clothingInfo == null) {
+                logger.warn("clothingInfo为空，无法生成图片");
+                return null;
+            }
+            
+            // 安全获取accessories
+            List<String> accessoriesList = clothingInfo.getAccessories();
+            String accessories = (accessoriesList != null && !accessoriesList.isEmpty()) ? 
+                String.join(", ", accessoriesList) : "无配饰";
+            
+            // 安全获取各个字段，提供默认值
+            String top = clothingInfo.getTop() != null ? clothingInfo.getTop() : "白色T恤";
+            String bottom = clothingInfo.getBottom() != null ? clothingInfo.getBottom() : "牛仔裤";
+            String shoes = clothingInfo.getShoes() != null ? clothingInfo.getShoes() : "运动鞋";
+            String background = clothingInfo.getBackground() != null ? clothingInfo.getBackground() : "城市街道";
+            
+            // 简化的图片提示词
+            String imagePrompt = String.format(
+                    "A full-body photo of a person. Character: %s, %s, %s, %s. " +
+                            "Wearing: %s, %s, %s. Accessories: %s. Background: %s. " +
+                            "Style: %s, realistic, high quality.",
+                    potrait.getGender(),
+                    potrait.getAgeGroup(),
+                    potrait.getEthnicity(),
+                    potrait.getClothingStyle(),
+                    top,
+                    bottom,
+                    shoes,
+                    accessories,
+                    background,
+                    potrait.getClothingStyle()
+            );
+            
+            logger.info("[GiteeImageGen] 开始生成图片，prompt长度: {}", imagePrompt.length());
+            
+            String giteeApiUrl = "https://ai.gitee.com/v1/images/generations";
+            String giteeApiKey = "DESZ72NMD0JGIB4ZHSUKNLDY4GJIRSSVULODHC1X";
+            HttpURLConnection giteeConnection = (HttpURLConnection) new URL(giteeApiUrl).openConnection();
+            giteeConnection.setRequestMethod("POST");
+            giteeConnection.setRequestProperty("Authorization", "Bearer " + giteeApiKey);
+            giteeConnection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+            giteeConnection.setDoOutput(true);
+            
+            // 设置图片生成超时
+            giteeConnection.setConnectTimeout(10000); // 10秒连接超时
+            giteeConnection.setReadTimeout(30000);    // 30秒读取超时
+            
+            Map<String, Object> giteePayload = new HashMap<>();
+            giteePayload.put("model", "flux-1-schnell");
+            giteePayload.put("prompt", imagePrompt);
+            giteePayload.put("size", "1024x1024");
+            giteePayload.put("n", 1);
+            giteePayload.put("response_format", "url");
+            
+            String giteeJsonInputString = JSON.toJSONString(giteePayload);
+            try (OutputStream os = giteeConnection.getOutputStream()) {
+                byte[] inputBytes = giteeJsonInputString.getBytes("utf-8");
+                os.write(inputBytes, 0, inputBytes.length);
+            }
+            
+            int giteeResponseCode = giteeConnection.getResponseCode();
+            if (giteeResponseCode == HttpURLConnection.HTTP_OK) {
+                try (BufferedReader giteeIn = new BufferedReader(new InputStreamReader(giteeConnection.getInputStream(), "utf-8"))) {
+                    StringBuilder giteeResponse = new StringBuilder();
+                    String line;
+                    while ((line = giteeIn.readLine()) != null) {
+                        giteeResponse.append(line.trim());
+                    }
+                    String giteeResponseBody = giteeResponse.toString();
+                    JSONObject imageResponse = JSON.parseObject(giteeResponseBody);
+                    return imageResponse.getJSONArray("data").getJSONObject(0).getString("url");
+                }
+            } else {
+                try (BufferedReader errorStream = new BufferedReader(new InputStreamReader(giteeConnection.getErrorStream(), "utf-8"))) {
+                    StringBuilder errorResponse = new StringBuilder();
+                    String line;
+                    while ((line = errorStream.readLine()) != null) {
+                        errorResponse.append(line.trim());
+                    }
+                    logger.error("[GiteeImageGen] API请求失败，状态码: {}, 错误: {}", giteeResponseCode, errorResponse.toString());
+                }
+            }
+            giteeConnection.disconnect();
+        } catch (Exception e) {
+            logger.error("generateClothingImage error", e);
+        }
+        return null;
+    }
+
+    private String getFidByCityId(String cityId) {
+        try {
+            return cityMappingService.getFidsByDivisionCode(Integer.valueOf(cityId)).get(0).toString();
+        } catch (Exception e) {
+            logger.error("getFidByCityId error", e);
+            return null;
+        }
     }
 }

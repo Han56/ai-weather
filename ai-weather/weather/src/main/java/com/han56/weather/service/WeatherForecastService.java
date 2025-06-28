@@ -58,8 +58,14 @@ public interface WeatherForecastService {
 
 
     /**
-     * 服务9
-     * @param cityId
+     * 服务9：AI穿衣推荐服务
+     * 优化策略：
+     * 1. 用户画像缓存 - 减少数据库查询
+     * 2. 天气数据缓存 - 减少API调用
+     * 3. AI推荐结果缓存 - 减少AI API调用
+     * 4. 异步图片生成 - 提升响应速度
+     * @param cityId 城市ID
+     * @param openId 用户ID
      * */
     ServiceResult<AiClothingRecommendationsResponse> aiClothingRecommendations(String cityId,String openId);
 
