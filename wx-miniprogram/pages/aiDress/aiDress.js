@@ -105,6 +105,24 @@ Page({
     });
   },
 
+  // 页面显示时检查是否需要重置推荐状态
+  onShow: function() {
+    const app = getApp();
+    // 检查是否有画像更新标记
+    if (app.globalData.portraitUpdated) {
+      // 重置推荐相关状态，回到初始状态
+      this.setData({
+        showRecommendation: false,
+        generating: false,
+        outfitImageUrl: '',
+        recommendationText: '根据当前天气状况，建议着装偏向保暖舒适。',
+        recommendationTags: []
+      });
+      // 清除更新标记
+      app.globalData.portraitUpdated = false;
+    }
+  },
+
   // 生成今日穿衣推荐
   generateRecommendation: function() {
     this.setData({ generating: true });
@@ -184,6 +202,7 @@ Page({
       return;
     }
 
+    // 第一次请求获取基础推荐信息
     wx.request({
       url: `${baseUrl}/weather/ai_recommends`,
       method: 'GET',
@@ -204,12 +223,17 @@ Page({
           ].filter(tag => !!tag);
 
           this.setData({
-            outfitImageUrl: result.imgUrl,
+            outfitImageUrl: result.imgUrl || '',
             recommendationText: result.detailedRecommendation.content,
             recommendationTags: tags,
             showRecommendation: true,
             generating: false,
           });
+
+          // 如果第一次请求没有图片，开始轮询检查图片
+          if (!result.imgUrl) {
+            this._pollForImage(cityId, openId);
+          }
         } else {
           this.setData({ generating: false });
           wx.showToast({
@@ -229,6 +253,54 @@ Page({
         console.error('Failed to generate recommendation:', err);
       }
     });
+  },
+
+  // 轮询检查图片是否生成完成
+  _pollForImage: function(cityId, openId) {
+    let pollCount = 0;
+    const maxPolls = 10; // 最大轮询次数，约20秒
+    const pollInterval = 2000; // 轮询间隔2秒
+
+    const poll = () => {
+      pollCount++;
+      
+      wx.request({
+        url: `${baseUrl}/weather/ai_recommends`,
+        method: 'GET',
+        data: {
+          cityId: cityId,
+          openId: openId
+        },
+        success: (res) => {
+          if (res.data.success && res.data.code === '200' && res.data.result) {
+            const result = res.data.result;
+            
+            // 如果获取到图片，更新界面并停止轮询
+            if (result.imgUrl) {
+              this.setData({
+                outfitImageUrl: result.imgUrl
+              });
+              return;
+            }
+          }
+          
+          // 如果还没获取到图片且未超过最大轮询次数，继续轮询
+          if (pollCount < maxPolls) {
+            setTimeout(poll, pollInterval);
+          }
+        },
+        fail: (err) => {
+          console.error('轮询图片失败：', err);
+          // 即使失败也继续轮询，除非超过最大次数
+          if (pollCount < maxPolls) {
+            setTimeout(poll, pollInterval);
+          }
+        }
+      });
+    };
+
+    // 开始轮询
+    setTimeout(poll, pollInterval);
   },
 
   // 获取生活指数

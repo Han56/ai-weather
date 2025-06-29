@@ -6,11 +6,11 @@ Page({
     formData: {
       gender: "",
       age: "",
-      country: "",
-      race: "",
+      country: "China", // 默认设置为 China
+      race: "Yellow race", // 默认设置为 Yellow race
       height: "",
       weight: "",
-      styles: [], // 穿衣风格数组
+      style: "", // 改为单选
       accessories: [], // 饰品数组
       hairstyles: [], // 发型数组
     },
@@ -25,8 +25,6 @@ Page({
     isModified: false,
     // 选择器索引
     ageIndex: 0,
-    countryIndex: 0,
-    raceIndex: 0,
     heightIndex: 0,
     weightIndex: 0,
 
@@ -43,26 +41,6 @@ Page({
       { label: "31-40岁", value: "adult,aged 31 to 40,", range: "31-40" },
       { label: "41-65岁", value: "middle,aged 41 to 65", range: "41-65" },
       { label: "65岁以上", value: "senior", range: "65+" },
-    ],
-
-    countryOptions: [
-      { label: "中国", value: "China" },
-      { label: "美国", value: "USA" },
-      { label: "韩国", value: "Korea" },
-      { label: "英国", value: "UK" },
-      { label: "法国", value: "France" },
-      { label: "德国", value: "Germany" },
-      { label: "澳大利亚", value: "Australia" },
-      { label: "加拿大", value: "Canada" },
-      { label: "其他", value: "China" },
-    ],
-
-    raceOptions: [
-      { label: "黄种人", value: "Yellow race" },
-      { label: "白种人", value: "caucasian" },
-      { label: "黑种人", value: "african" },
-      { label: "混血", value: "mixed" },
-      { label: "其他", value: "other" },
     ],
 
     // 男性身高选项
@@ -87,69 +65,112 @@ Page({
 
     // 男性体重选项
     maleWeightOptions: [
-      { label: "40-50kg", value: "40 to 50 kilograms", range: "40-50" },
-      { label: "50-60kg", value: "50 to 60 kilograms", range: "50-60" },
-      { label: "60-70kg", value: "60 to 70 kilograms", range: "60-70" },
-      { label: "70-80kg", value: "70 to 80 kilograms", range: "70-80" },
-      { label: "80-90kg", value: "80 to 90 kilograms", range: "80-90" },
-      { label: "90kg以上", value: "over 90 kilograms", range: "90+" },
+      { label: "40-50kg", value: "40 to 50 kilograms,Very thin", range: "40-50" },
+      { label: "50-60kg", value: "50 to 60 kilograms,Thin and slender", range: "50-60" },
+      { label: "60-70kg", value: "60 to 70 kilograms,Slim body", range: "60-70" },
+      { label: "70-80kg", value: "70 to 80 kilograms,Slightly fat and thin", range: "70-80" },
+      { label: "80-90kg", value: "80 to 90 kilograms,Slightly plump", range: "80-90" },
+      { label: "90kg以上", value: "over 90 kilograms,Obesity", range: "90+" },
     ],
 
     // 女性体重选项
     femaleWeightOptions: [
-      { label: "35-45kg", value: "35 to 45 kilograms", range: "35-45" },
-      { label: "45-55kg", value: "45 to 55 kilograms", range: "45-55" },
-      { label: "55-65kg", value: "55 to 65 kilograms", range: "55-65" },
-      { label: "65-75kg", value: "65-75 kilograms", range: "65-75" },
-      { label: "75-85kg", value: "75 to 85 kilograms", range: "75-85" },
-      { label: "85kg以上", value: "over 85 kilograms", range: "85+" },
+      { label: "35-45kg", value: "35 to 45 kilograms,Very thin", range: "35-45" },
+      { label: "45-55kg", value: "45 to 55 kilograms,Thin and slender", range: "45-55" },
+      { label: "55-65kg", value: "55 to 65 kilograms,Slim body", range: "55-65" },
+      { label: "65-75kg", value: "65-75 kilograms,Slightly fat and thin", range: "65-75" },
+      { label: "75-85kg", value: "75 to 85 kilograms,Slightly plump", range: "75-85" },
+      { label: "85kg以上", value: "over 85 kilograms,Obesity", range: "85+" },
     ],
 
-    // 穿衣风格选项
-    styleOptions: [
-      { value: 'casual', label: '休闲风', index: 0 },
-      { value: 'business', label: '商务风', index: 1 },
-      { value: 'street', label: '街头风', index: 2 },
-      { value: 'sport', label: '运动风', index: 3 },
-      { value: 'fashion', label: '时尚风', index: 4 },
-      { value: 'minimalist', label: '简约风', index: 5 },
-      { value: 'vintage', label: '复古风', index: 6 },
-      { value: 'sweet', label: '甜美风', index: 7 },
-      { value: 'punk', label: '朋克风', index: 8 },
-      { value: 'pastoral', label: '田园风', index: 9 }
+    // 穿衣风格选项 - 男性
+    maleStyleOptions: [
+      { value: 'Natural and healing dressing style', label: '自然治愈风' },
+      { value: 'Zero-pressure commuting style', label: '零压通勤风' },
+      { value: 'Urban light wild dressing style', label: '城市轻野风' },
+      { value: 'Retro dressing style', label: '复古主义' },
+      { value: 'Fashion sportswear style', label: '时尚运动风' },
+      { value: 'Oversized suit dressing style', label: '超大号西装风' },
+      { value: 'Soft and light-colored dressing style', label: '柔美浅色风' },
+      { value: 'High-end workwear style', label: '高级工装风' },
+      { value: 'Office dressing style', label: '办公职场风' }
     ],
 
-    // 饰品选项
-    accessoryOptions: [
-      { value: 'glasses', label: '眼镜', index: 0 },
-      { value: 'sunglasses', label: '太阳镜', index: 1 },
-      { value: 'earrings', label: '耳环', index: 2 },
-      { value: 'necklace', label: '项链', index: 3 },
-      { value: 'bracelet', label: '手链', index: 4 },
-      { value: 'ring', label: '戒指', index: 5 },
-      { value: 'watch', label: '手表', index: 6 },
-      { value: 'hat', label: '帽子', index: 7 },
-      { value: 'scarf', label: '围巾', index: 8 },
-      { value: 'brooch', label: '胸针', index: 9 }
+    // 穿衣风格选项 - 女性
+    femaleStyleOptions: [
+      { value: 'Soft and light-colored dressing style', label: '柔美浅色风' },
+      { value: 'Natural healing dressing style', label: '自然治愈风' },
+      { value: 'Elegant commuting style', label: '优雅通勤风' },
+      { value: 'French elegant dressing style', label: '法式优雅风' },
+      { value: 'Retro literary dressing style', label: '复古文艺风' },
+      { value: 'Simple minimalist dressing style', label: '简约极简风' },
+      { value: 'Sweet girl dressing style', label: '甜美少女风' },
+      { value: 'Fashion sportswear style', label: '时尚运动风' }
     ],
 
-    // 发型选项
-    hairstyleOptions: [
-      { label: "短发", value: "short" },
-      { label: "长发", value: "long" },
-      { label: "直发", value: "straight" },
-      { label: "卷发", value: "curly" },
-      { label: "马尾", value: "ponytail" },
-      { label: "丸子头", value: "bun" },
-      { label: "波浪卷", value: "wavy" },
-      { label: "刘海", value: "bangs" },
-      { label: "中分", value: "middle_part" },
-      { label: "侧分", value: "side_part" },
+    // 饰品选项 - 男性
+    maleAccessoryOptions: [
+      { value: 'Business myopia glasses without a lower frame', label: '眼镜(偏商务)' },
+      { value: 'Korean version of gentle and intellectual black-framed square-framed glasses for both men and women', label: '韩系方框黑框眼镜' },
+      { value: 'Men\'s necklace', label: '项链' },
+      { value: 'Men\'s bracelet', label: '手链' },
+      { value: 'Men\'s NBA sports bracelet', label: '手环' },
+      { value: 'Men\'s elegant ring', label: '戒指' },
+      { value: 'Super cool sunglasses for men', label: '太阳镜' },
+      { value: 'Super cool and super business watch for men', label: '手表(偏商务)' },
+      { value: 'Men\'s sports watch', label: '运动手表' },
+      { value: 'Men\'s sun hat', label: '帽子' },
+      { value: 'Men\'s super business handbag', label: '手提包' }
     ],
+
+    // 饰品选项 - 女性
+    femaleAccessoryOptions: [
+      { value: 'Business myopia glasses without a lower frame', label: '眼镜(偏商务)' },
+      { value: 'Korean version of gentle and intellectual black-framed square-framed glasses for both men and women', label: '韩系方框黑框眼镜' },
+      { value: 'A super beautiful necklace for ladies', label: '项链' },
+      { value: 'Super beautiful earrings for ladies', label: '耳饰' },
+      { value: 'A super beautiful and elegant bracelet for ladies', label: '手链' },
+      { value: 'A super beautiful, elegant and luxurious ring for ladies', label: '戒指' },
+      { value: 'Super cool sunglasses for female', label: '太阳镜' },
+      { value: 'A super beautiful and elegant hat for ladies', label: '帽子' },
+      { value: 'A super beautiful and elegant bag for ladies', label: '包包' }
+    ],
+
+    // 当前饰品选项（根据性别动态变化）
+    currentAccessoryOptions: [],
+
+    // 发型选项 - 男性
+    maleHairstyleOptions: [
+      { label: "极简寸头", value: "American crew cut hairstyle" },
+      { label: "简约毛寸", value: "Hair inch hairstyle" },
+      { label: "韩系中分", value: "Korean-style split hairstyle" },
+      { label: "韩式自然纹理", value: "Korean-style natural texture hairstyle" },
+      { label: "侧向纹理", value: "Korean-style side-textured hairstyle" },
+      { label: "嘻哈脏辫", value: "Hip-hop black braided hairstyle" },
+      { label: "港风侧背", value: "Hong Kong-style side-back hairstyle" },
+      { label: "动感前刺", value: "Dynamic front spike hairstyle" }
+    ],
+
+    // 发型选项 - 女性
+    femaleHairstyleOptions: [
+      { label: "韩系自然卷", value: "Korean-style natural curly hairstyle" },
+      { label: "韩系内扣", value: "Korean-style inward-cursed hairstyle" },
+      { label: "法式波浪", value: "French wavy hairstyle" },
+      { label: "法式蓬松刘海", value: "French fluffy bangs hairstyle" },
+      { label: "日系甜美短发", value: "A sweet short Japanese-style hairstyle" },
+      { label: "日系空气卷发", value: "Japanese-style air curly hairstyle" },
+      { label: "经典波波头", value: "Classic Bob hairstyle" }
+    ],
+
+    // 当前风格选项（根据性别动态变化）
+    currentStyleOptions: [],
 
     // 当前身高体重选项（根据性别动态变化）
     currentHeightOptions: [],
     currentWeightOptions: [],
+
+    // 当前发型选项（根据性别动态变化）
+    currentHairstyleOptions: [],
   },
 
   onLoad() {
@@ -191,11 +212,11 @@ Page({
               formData: {
                 gender: "",
                 age: "",
-                country: "",
-                race: "",
+                country: "China",
+                race: "Yellow race",
                 height: "",
                 weight: "",
-                styles: [],
+                style: "",
                 accessories: [],
                 hairstyles: []
               },
@@ -213,18 +234,18 @@ Page({
           const formData = {
             gender: data.gender || "",
             age: data.ageGroup || "",
-            country: data.countryRegion || "",
-            race: data.ethnicity || "",
+            country: data.countryRegion || "China",
+            race: data.ethnicity || "Yellow race",
             height: data.heightRange || "",
             weight: data.weightRange || "",
-            styles: data.clothingStyle ? data.clothingStyle.split(',').filter(Boolean) : [],
+            style: data.clothingStyle || "",
             accessories: data.accessoriesPreference ? data.accessoriesPreference.split(',').filter(Boolean) : [],
             hairstyles: data.hairstylePreference ? [data.hairstylePreference] : [],
           }
 
           // 选中状态
           let styleStates = {}
-          formData.styles.forEach(val => { styleStates[val] = true })
+          styleStates[formData.style] = true
           let accessoryStates = {}
           formData.accessories.forEach(val => { accessoryStates[val] = true })
 
@@ -239,7 +260,7 @@ Page({
           }, () => {
             this.updateHeightWeightOptions()
             this.updatePickerIndexes()
-            console.log('当前styles:', this.data.formData.styles)
+            console.log('当前style:', this.data.formData.style)
             console.log('当前accessories:', this.data.formData.accessories)
             console.log('当前选中状态:', this.data.selectedStates)
           })
@@ -273,14 +294,6 @@ Page({
     const ageIndex = this.data.ageOptions.findIndex((item) => item.value === formData.age)
     if (ageIndex !== -1) this.setData({ ageIndex })
 
-    // 更新国家索引
-    const countryIndex = this.data.countryOptions.findIndex((item) => item.value === formData.country)
-    if (countryIndex !== -1) this.setData({ countryIndex })
-
-    // 更新人种索引
-    const raceIndex = this.data.raceOptions.findIndex((item) => item.value === formData.race)
-    if (raceIndex !== -1) this.setData({ raceIndex })
-
     // 更新身高体重索引
     this.updateHeightWeightIndexes()
   },
@@ -292,6 +305,9 @@ Page({
       "formData.gender": gender,
       "formData.height": "", // 重置身高
       "formData.weight": "", // 重置体重
+      "formData.style": "", // 重置风格
+      "formData.hairstyles": [], // 重置发型
+      "formData.accessories": [], // 重置饰品
       heightIndex: 0,
       weightIndex: 0,
     }, () => {
@@ -306,28 +322,6 @@ Page({
     this.setData({
       ageIndex: index,
       "formData.age": this.data.ageOptions[index].value,
-    }, () => {
-      this.checkFormModified()
-    })
-  },
-
-  // 国家选择
-  onCountryChange(e) {
-    const index = e.detail.value
-    this.setData({
-      countryIndex: index,
-      "formData.country": this.data.countryOptions[index].value,
-    }, () => {
-      this.checkFormModified()
-    })
-  },
-
-  // 人种选择
-  onRaceChange(e) {
-    const index = e.detail.value
-    this.setData({
-      raceIndex: index,
-      "formData.race": this.data.raceOptions[index].value,
     }, () => {
       this.checkFormModified()
     })
@@ -361,33 +355,18 @@ Page({
     const label = e.currentTarget.dataset.label;
     console.log('点击的风格值:', value, '标签:', label);
     
-    // 更新选中状态
+    // 更新选中状态 - 单选逻辑
     const newSelectedStates = {
       ...this.data.selectedStates,
-      styles: {
-        ...this.data.selectedStates.styles,
-        [value]: !this.data.selectedStates.styles[value]
-      }
+      styles: {}
     };
-    
-    // 更新styles数组
-    let styles = [...this.data.formData.styles];
-    if (newSelectedStates.styles[value]) {
-      if (!styles.includes(value)) {
-        styles.push(value);
-      }
-    } else {
-      styles = styles.filter(item => item !== value);
-    }
-    
-    console.log('更新后的styles数组:', styles);
-    console.log('更新后的选中状态:', newSelectedStates.styles);
+    newSelectedStates.styles[value] = true;
     
     this.setData({
-      'formData.styles': styles,
+      'formData.style': value,
       'selectedStates': newSelectedStates
     }, () => {
-      console.log('设置后的styles:', this.data.formData.styles);
+      console.log('设置后的style:', this.data.formData.style);
       console.log('设置后的选中状态:', this.data.selectedStates.styles);
       this.checkFormModified();
     });
@@ -449,16 +428,25 @@ Page({
       this.setData({
         currentHeightOptions: this.data.maleHeightOptions,
         currentWeightOptions: this.data.maleWeightOptions,
+        currentStyleOptions: this.data.maleStyleOptions,
+        currentHairstyleOptions: this.data.maleHairstyleOptions,
+        currentAccessoryOptions: this.data.maleAccessoryOptions,
       })
     } else if (gender === "female") {
       this.setData({
         currentHeightOptions: this.data.femaleHeightOptions,
         currentWeightOptions: this.data.femaleWeightOptions,
+        currentStyleOptions: this.data.femaleStyleOptions,
+        currentHairstyleOptions: this.data.femaleHairstyleOptions,
+        currentAccessoryOptions: this.data.femaleAccessoryOptions,
       })
     } else {
       this.setData({
         currentHeightOptions: [],
         currentWeightOptions: [],
+        currentStyleOptions: [],
+        currentHairstyleOptions: [],
+        currentAccessoryOptions: [],
       })
     }
 
@@ -492,20 +480,16 @@ Page({
       wx.showToast({ title: "请选择年龄段", icon: "none" })
       return
     }
-    if (!formData.country) {
-      wx.showToast({ title: "请选择国家与地区", icon: "none" })
-      return
-    }
-    if (!formData.race) {
-      wx.showToast({ title: "请选择人种", icon: "none" })
-      return
-    }
     if (!formData.height) {
       wx.showToast({ title: "请选择身高范围", icon: "none" })
       return
     }
     if (!formData.weight) {
       wx.showToast({ title: "请选择体重范围", icon: "none" })
+      return
+    }
+    if (!formData.style) {
+      wx.showToast({ title: "请选择穿衣风格", icon: "none" })
       return
     }
     if (!formData.hairstyles.length) {
@@ -531,7 +515,7 @@ Page({
       ethnicity: formData.race,
       heightRange: formData.height,
       weightRange: formData.weight,
-      clothingStyle: formData.styles.join(','),
+      clothingStyle: formData.style,
       accessoriesPreference: formData.accessories.join(','),
       hairstylePreference: formData.hairstyles.length > 0 ? formData.hairstyles[0] : '',
       adCode: adCode
@@ -569,6 +553,9 @@ Page({
             originalData: JSON.stringify(formData),
             isModified: false
           })
+
+          // 设置全局标记，通知AI穿搭页面需要重置
+          app.globalData.portraitUpdated = true
 
           // 延迟返回上一页
           setTimeout(() => {
