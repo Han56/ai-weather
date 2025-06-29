@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import java.util.Set;
 
 /**
  * 缓存管理工具类
@@ -99,9 +100,54 @@ public class CacheManager {
         String portraitKey = String.format("user_portrait:%s", openId);
         redisUtil.del(portraitKey);
         
-        // 清除该用户的所有AI推荐缓存
-        // 注意：这里需要根据实际需求实现模式匹配删除
+        // 清除用户缓存（简化版本）
+        String userKey = String.format("user:%s", openId);
+        redisUtil.del(userKey);
+        
         logger.info("用户缓存已清除: {}", openId);
+    }
+
+    /**
+     * 清除用户AI推荐缓存
+     * 清除该用户在所有城市的AI推荐缓存
+     */
+    public void clearUserAiRecommendCache(String openId) {
+        try {
+            // 获取所有匹配的AI推荐缓存key
+            Set<String> keys = redisUtil.keys("ai_recommend:*:" + openId);
+            if (keys != null && !keys.isEmpty()) {
+                for (String key : keys) {
+                    redisUtil.del(key);
+                    logger.info("清除AI推荐缓存: {}", key);
+                }
+                logger.info("用户AI推荐缓存已清除，共清除{}个缓存", keys.size());
+            } else {
+                logger.info("用户{}没有找到AI推荐缓存", openId);
+            }
+        } catch (Exception e) {
+            logger.error("清除用户AI推荐缓存失败: {}", e.getMessage(), e);
+        }
+    }
+
+    /**
+     * 清除特定城市的AI推荐缓存
+     */
+    public void clearCityAiRecommendCache(String cityId) {
+        try {
+            // 获取所有匹配的AI推荐缓存key
+            Set<String> keys = redisUtil.keys("ai_recommend:" + cityId + ":*");
+            if (keys != null && !keys.isEmpty()) {
+                for (String key : keys) {
+                    redisUtil.del(key);
+                    logger.info("清除城市AI推荐缓存: {}", key);
+                }
+                logger.info("城市AI推荐缓存已清除，共清除{}个缓存", keys.size());
+            } else {
+                logger.info("城市{}没有找到AI推荐缓存", cityId);
+            }
+        } catch (Exception e) {
+            logger.error("清除城市AI推荐缓存失败: {}", e.getMessage(), e);
+        }
     }
 
     /**

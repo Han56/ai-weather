@@ -357,8 +357,19 @@ public class WeatherForecastServiceImpl implements WeatherForecastService {
             String cacheKey = String.format("ai_recommend:%s:%s", cityId, openId);
             Object cachedResult = redisUtil.get(cacheKey);
             if (cachedResult != null) {
-                logger.info("缓存命中，耗时={}ms", System.currentTimeMillis() - startTime);
-                return ServiceResult.success((AiClothingRecommendationsResponse) cachedResult);
+                try {
+                    if (cachedResult instanceof AiClothingRecommendationsResponse) {
+                        logger.info("缓存命中，耗时={}ms", System.currentTimeMillis() - startTime);
+                        return ServiceResult.success((AiClothingRecommendationsResponse) cachedResult);
+                    } else {
+                        logger.warn("AI推荐缓存数据类型不匹配，期望AiClothingRecommendationsResponse，实际: {}, 清除缓存: {}", 
+                            cachedResult.getClass().getSimpleName(), cacheKey);
+                        redisUtil.del(cacheKey);
+                    }
+                } catch (Exception e) {
+                    logger.error("AI推荐缓存数据转换失败，清除缓存: {}", cacheKey, e);
+                    redisUtil.del(cacheKey);
+                }
             }
 
             // 2. 并行获取数据
@@ -366,10 +377,30 @@ public class WeatherForecastServiceImpl implements WeatherForecastService {
             CompletableFuture<PotraitSettingInfo> portraitFuture = CompletableFuture.supplyAsync(() -> {
                 String cacheKey2 = "user:" + openId;
                 Object cached = redisUtil.get(cacheKey2);
-                if (cached != null) return (PotraitSettingInfo) cached;
+                if (cached != null) {
+                    try {
+                        if (cached instanceof PotraitSettingInfo) {
+                            return (PotraitSettingInfo) cached;
+                        } else {
+                            logger.warn("用户画像缓存数据类型不匹配，期望PotraitSettingInfo，实际: {}, 清除缓存: {}", 
+                                cached.getClass().getSimpleName(), cacheKey2);
+                            redisUtil.del(cacheKey2);
+                        }
+                    } catch (Exception e) {
+                        logger.error("用户画像缓存数据转换失败，清除缓存: {}", cacheKey2, e);
+                        redisUtil.del(cacheKey2);
+                    }
+                }
                 
                 PotraitSettingInfo potrait = potraitSettingInfoService.selectByOpenId(openId);
-                if (potrait != null) redisUtil.set(cacheKey2, potrait, 1800);
+                if (potrait != null) {
+                    try {
+                        redisUtil.set(cacheKey2, potrait, 1800);
+                        logger.info("用户画像已缓存: {}", cacheKey2);
+                    } catch (Exception e) {
+                        logger.warn("用户画像缓存失败: {}", e.getMessage());
+                    }
+                }
                 return potrait;
             });
 
@@ -389,7 +420,7 @@ public class WeatherForecastServiceImpl implements WeatherForecastService {
                 return null;
             }
 
-            // 4. 快速AI推荐（简化提示词）
+            // 4. 快速AI推荐（详细版）
             AiClothingRecommendationsResponse rec = getQuickRecommendation(potrait, weatherList);
             if (rec == null) {
                 logger.warn("AI推荐生成失败");
@@ -397,7 +428,12 @@ public class WeatherForecastServiceImpl implements WeatherForecastService {
             }
 
             // 5. 先缓存文案结果（不包含图片）
-            redisUtil.set(cacheKey, rec, 900);
+            try {
+                redisUtil.set(cacheKey, rec, 900);
+                logger.info("AI推荐结果已缓存: {}", cacheKey);
+            } catch (Exception e) {
+                logger.warn("AI推荐结果缓存失败: {}", e.getMessage());
+            }
 
             // 6. 异步生成图片（不阻塞主流程）
             generateImageAsync(rec, potrait, cacheKey);
@@ -417,7 +453,23 @@ public class WeatherForecastServiceImpl implements WeatherForecastService {
         String cacheKey = "weather:" + fid;
         Object cached = redisUtil.get(cacheKey);
         if (cached != null) {
-            return (List<ForecastHourly>) cached;
+            try {
+                // 安全地检查缓存数据类型
+                if (cached instanceof List) {
+                    return (List<ForecastHourly>) cached;
+                } else if (cached instanceof byte[]) {
+                    // 如果是字节数组，说明序列化有问题，清除缓存并重新获取
+                    logger.warn("缓存数据格式错误，清除缓存: {}", cacheKey);
+                    redisUtil.del(cacheKey);
+                } else {
+                    logger.warn("缓存数据类型不匹配，期望List，实际: {}, 清除缓存: {}", 
+                        cached.getClass().getSimpleName(), cacheKey);
+                    redisUtil.del(cacheKey);
+                }
+            } catch (Exception e) {
+                logger.error("缓存数据转换失败，清除缓存: {}", cacheKey, e);
+                redisUtil.del(cacheKey);
+            }
         }
         
         try {
@@ -436,9 +488,15 @@ public class WeatherForecastServiceImpl implements WeatherForecastService {
                 ForecastHourlyMojiResponse forecastResponse = JSON.parseObject(response, ForecastHourlyMojiResponse.class);
                 List<ForecastHourly> weatherList = forecastResponse.getForecastHourlyMojiData().getForecastHourlyList();
                 if (weatherList != null && !weatherList.isEmpty()) {
-                    // 只取前5小时数据，减少处理量
-                    List<ForecastHourly> result = weatherList.size() >= 5 ? weatherList.subList(0, 5) : weatherList;
-                    redisUtil.set(cacheKey, result, 900);
+                    // 获取前10小时数据，用于详细的穿衣推荐
+                    List<ForecastHourly> result = weatherList.size() >= 10 ? weatherList.subList(0, 10) : weatherList;
+                    // 安全地设置缓存
+                    try {
+                        redisUtil.set(cacheKey, result, 900);
+                        logger.info("天气数据已缓存: {}", cacheKey);
+                    } catch (Exception e) {
+                        logger.warn("天气数据缓存失败: {}", e.getMessage());
+                    }
                     return result;
                 }
             }
@@ -449,44 +507,73 @@ public class WeatherForecastServiceImpl implements WeatherForecastService {
     }
 
     /**
-     * 快速AI推荐（简化版）
+     * 快速AI推荐（详细版）
      */
     private AiClothingRecommendationsResponse getQuickRecommendation(PotraitSettingInfo potrait, List<ForecastHourly> weatherList) {
         try {
-            // 简化的提示词
-            String simplePrompt = buildSimplePrompt(potrait, weatherList);
+            // 构建详细的提示词
+            String detailedPrompt = buildDetailedPrompt(potrait, weatherList);
             
-            String url = "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions";
-            String apiKey = "sk-83512bc1351648b2bd30015e02d8aa7c";
+            String url = "https://ai.gitee.com/v1/chat/completions";
+            String apiKey = "1C2UET55SPZOQKYDBJLYAMM6PGFEZZBJLFHZDJSA";
             HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
             connection.setRequestMethod("POST");
             connection.setRequestProperty("Authorization", "Bearer " + apiKey);
-            connection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+            connection.setRequestProperty("Content-Type", "application/json");
             connection.setDoOutput(true);
             
-            // 更短的超时时间
+            // 设置超时时间
             connection.setConnectTimeout(5000);  // 5秒连接超时
             connection.setReadTimeout(15000);    // 15秒读取超时
 
             Map<String, Object> payload = new HashMap<>();
-            payload.put("model", "qwen2.5-32b-instruct");
-            payload.put("max_tokens", 500);  // 限制输出长度
+            payload.put("model", "Qwen2.5-32B-Instruct");
+            payload.put("max_tokens", 800);
+            payload.put("temperature", 0.7);
+            payload.put("top_p", 0.7);
+            payload.put("top_k", 50);
+            payload.put("frequency_penalty", 1);
+            payload.put("stream", false);  // 设置为false，因为我们不需要流式响应
             
             List<Map<String, String>> messages = new ArrayList<>();
             Map<String, String> systemMessage = new HashMap<>();
             systemMessage.put("role", "system");
-            systemMessage.put("content", "你是一个穿衣搭配专家。根据天气和用户特征给出简洁的穿衣建议，以JSON格式输出。请严格按照以下格式输出：{\"clothing_info\": {\"top\": \"上衣\", \"bottom\": \"下装\", \"shoes\": \"鞋子\", \"accessories\": [\"配饰1\", \"配饰2\"], \"background\": \"背景\"}, \"detailed_recommendation\": {\"title\": \"推荐标题\", \"content\": \"推荐内容\"}}");
+            systemMessage.put("content", "# 角色\n" +
+                    "你是一个天气专家与穿衣搭配推荐专家。\n" +
+                    "## 技能\n" +
+                    "### 技能 \n" +
+                    "1. 只输出最终的结果，不输出思考信息。\n" +
+                    "2. 推荐的衣物要贴合生活，推荐一些日常生活和工作通勤场景的衣物。                                        \n" +
+                    "## 限制\n" +
+                    "- 1.输出的格式要严格按照下面的输出格式来，不输出多余信息。\n" +
+                    "- 2.禁止出现色情类型的衣物推荐.\n" +
+                    "- 3.输出的detailed_recommendation.content要尽量简短一些，不超过100词，并且必须和clothing_info中提到的保持一致。\n" +
+                    "\n" +
+                    "#任务\n" +
+                    "你要根据给到的当天未来10小时天气情况（包括温度、湿度、大气压、风向、风速等多角度）、人物画像（性别、穿衣风格、年龄、身高体重、国籍、人种方面）以及所在城市给出最合理的穿衣搭配方案。\n" +
+                    "\n" +
+                    "#输出格式\n" +
+                    "{\n" +
+                    "  \"clothing_info\": {\n" +
+                    "    \"top\": \"白色T恤\",\n" +
+                    "    \"bottom\": \"牛仔裤\",\n" +
+                    "    \"shoes\": \"运动鞋\",\n" +
+                    "    \"accessories\": [\"太阳镜\", \"棒球帽\"],\n" +
+                    "    \"background\": \"城市街道\"\n" +
+                    "  },\n" +
+                    "  \"detailed_recommendation\": {\n" +
+                    "    \"title\": \"今日穿搭推荐\",\n" +
+                    "    \"content\": \"根据今天晴朗的天气，推荐穿着舒适简约风格。上身搭配白色T恤，下身穿着经典的蓝色牛仔裤，脚蹬一双白色运动鞋，既舒适又时尚。搭配太阳镜和棒球帽，为整体造型增添活力感，背景选择城市街道，展现都市休闲风格。\"\n" +
+                    "  }\n" +
+                    "}");
             messages.add(systemMessage);
             
             Map<String, String> userMessage = new HashMap<>();
             userMessage.put("role", "user");
-            userMessage.put("content", simplePrompt);
+            userMessage.put("content", detailedPrompt);
             messages.add(userMessage);
             
             payload.put("messages", messages);
-            Map<String, String> responseFormat = new HashMap<>();
-            responseFormat.put("type", "json_object");
-            payload.put("response_format", responseFormat);
             
             String jsonInputString = JSON.toJSONString(payload);
             try (OutputStream os = connection.getOutputStream()) {
@@ -522,6 +609,53 @@ public class WeatherForecastServiceImpl implements WeatherForecastService {
             logger.error("getQuickRecommendation error", e);
         }
         return null;
+    }
+
+    /**
+     * 构建详细提示词
+     */
+    private String buildDetailedPrompt(PotraitSettingInfo potrait, List<ForecastHourly> weatherList) {
+        StringBuilder prompt = new StringBuilder();
+        
+        // 添加人物画像信息
+        prompt.append("# 人物画像\n");
+        prompt.append(String.format("性别：%s；", potrait.getGender()));
+        prompt.append(String.format("年龄：%s；", potrait.getAgeGroup()));
+        prompt.append(String.format("穿衣风格：%s；", potrait.getClothingStyle()));
+        prompt.append(String.format("身高：%s；", potrait.getHeightRange()));
+        prompt.append(String.format("体重：%s；", potrait.getWeightRange()));
+        prompt.append(String.format("国籍：%s；", potrait.getCountryRegion()));
+        prompt.append(String.format("人种：%s；", potrait.getEthnicity()));
+        prompt.append("\n");
+        
+        // 添加天气信息
+        prompt.append("# 未来10小时天气情况\n");
+        prompt.append("\"forecastHourlyList\": [\n");
+        
+        for (int i = 0; i < Math.min(weatherList.size(), 10); i++) {
+            ForecastHourly weather = weatherList.get(i);
+            prompt.append(String.format("                {\n"));
+            prompt.append(String.format("                    \"condition\": \"%s\",\n", weather.getCondition()));
+            prompt.append(String.format("                    \"date\": \"%s\",\n", weather.getDate()));
+            prompt.append(String.format("                    \"hour\": \"%s\",\n", weather.getHour()));
+            prompt.append(String.format("                    \"humidity\": \"%s\",\n", weather.getHumidity()));
+            prompt.append(String.format("                    \"pressure\": \"%s\",\n", weather.getPressure()));
+            prompt.append(String.format("                    \"realFeel\": \"%s\",\n", weather.getRealFeel()));
+            prompt.append(String.format("                    \"temp\": \"%s\",\n", weather.getTemp()));
+            prompt.append(String.format("                    \"uvi\": \"%s\",\n", weather.getUvi()));
+            prompt.append(String.format("                    \"windDir\": \"%s\",\n", weather.getWindDir()));
+            prompt.append(String.format("                    \"windSpeed\": \"%s\"\n", weather.getWindSpeed()));
+            
+            if (i < Math.min(weatherList.size(), 10) - 1) {
+                prompt.append("                },\n");
+            } else {
+                prompt.append("                }\n");
+            }
+        }
+        
+        prompt.append("            ]");
+        
+        return prompt.toString();
     }
 
     /**
@@ -611,23 +745,6 @@ public class WeatherForecastServiceImpl implements WeatherForecastService {
     }
 
     /**
-     * 构建简化提示词
-     */
-    private String buildSimplePrompt(PotraitSettingInfo potrait, List<ForecastHourly> weatherList) {
-        // 只取第一个天气数据
-        ForecastHourly weather = weatherList.get(0);
-        
-        String userInfo = String.format("用户：%s，%s，%s，%s", 
-            potrait.getGender(), potrait.getAgeGroup(), potrait.getClothingStyle(), potrait.getCountryRegion());
-        
-        String weatherInfo = String.format("天气：%s，温度%s°C，%s", 
-            weather.getCondition(), weather.getTemp(), weather.getWindDir());
-        
-        return String.format("根据以下信息给出穿衣建议：%s。%s。请以JSON格式输出，包含clothing_info和detailed_recommendation字段。", 
-            userInfo, weatherInfo);
-    }
-
-    /**
      * 异步生成图片
      */
     private void generateImageAsync(AiClothingRecommendationsResponse rec, PotraitSettingInfo potrait, String cacheKey) {
@@ -638,9 +755,13 @@ public class WeatherForecastServiceImpl implements WeatherForecastService {
                 if (imgUrl != null) {
                     rec.setImgUrl(imgUrl);
                     // 更新缓存（包含图片）
-                    redisUtil.set(cacheKey, rec, 900);
-                    logger.info("异步图片生成成功，耗时={}ms, url={}", 
-                        System.currentTimeMillis() - imageStartTime, imgUrl);
+                    try {
+                        redisUtil.set(cacheKey, rec, 900);
+                        logger.info("异步图片生成成功，耗时={}ms, url={}", 
+                            System.currentTimeMillis() - imageStartTime, imgUrl);
+                    } catch (Exception e) {
+                        logger.warn("异步图片生成成功，但缓存更新失败: {}", e.getMessage());
+                    }
                 } else {
                     logger.warn("异步图片生成失败");
                 }
@@ -674,19 +795,28 @@ public class WeatherForecastServiceImpl implements WeatherForecastService {
             
             // 简化的图片提示词
             String imagePrompt = String.format(
-                    "A full-body photo of a person. Character: %s, %s, %s, %s. " +
-                            "Wearing: %s, %s, %s. Accessories: %s. Background: %s. " +
-                            "Style: %s, realistic, high quality.",
+                    "Help me generate a full-body photo of a character. " +
+                            "It must be a complete full-body picture." +
+                            "When it rains, the character's umbrella must be held in hand.There are no other pedestrians in the background" +
+                            "Shot with a Sony α7R IV and cinematic lighting, surrealist photography." +
+                            "The characteristics of this character are as follows: " +
+                    "(Gender:%s,Age:%s,Nationality:%s,dressing style:%s," +
+                            "Ethnicity:%s,Height:%s,Weight:%s,Hairstyle:%s). " +
+                            "Wearing a  %s, %s,and %s. " +
+                            "Other accessories include:%s.Picture background:%s.",
                     potrait.getGender(),
                     potrait.getAgeGroup(),
-                    potrait.getEthnicity(),
+                    potrait.getCountryRegion(),
                     potrait.getClothingStyle(),
+                    potrait.getEthnicity(),
+                    potrait.getHeightRange(),
+                    potrait.getWeightRange(),
+                    potrait.getHairstylePreference(),
                     top,
                     bottom,
                     shoes,
                     accessories,
-                    background,
-                    potrait.getClothingStyle()
+                    background
             );
             
             logger.info("[GiteeImageGen] 开始生成图片，prompt长度: {}", imagePrompt.length());

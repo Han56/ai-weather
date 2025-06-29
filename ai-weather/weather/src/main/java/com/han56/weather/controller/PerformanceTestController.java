@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -105,24 +106,31 @@ public class PerformanceTestController {
         
         if (cachedResult != null) {
             try {
-                // 使用反射获取imgUrl字段，避免类型转换问题
-                java.lang.reflect.Field imgUrlField = cachedResult.getClass().getDeclaredField("imgUrl");
-                imgUrlField.setAccessible(true);
-                String imgUrl = (String) imgUrlField.get(cachedResult);
-                
-                result.put("hasRecommendation", true);
-                result.put("hasImage", imgUrl != null && !imgUrl.isEmpty());
-                result.put("imageUrl", imgUrl);
-                result.put("recommendation", cachedResult);
-                
-                logger.info("图片状态检查 - 有推荐: {}, 有图片: {}, 图片URL: {}", 
-                    true, imgUrl != null && !imgUrl.isEmpty(), imgUrl);
-                
+                if (cachedResult instanceof com.han56.weather.models.response.AiClothingRecommendationsResponse) {
+                    com.han56.weather.models.response.AiClothingRecommendationsResponse response = 
+                        (com.han56.weather.models.response.AiClothingRecommendationsResponse) cachedResult;
+                    
+                    result.put("hasRecommendation", true);
+                    result.put("hasImage", response.getImgUrl() != null && !response.getImgUrl().isEmpty());
+                    result.put("imageUrl", response.getImgUrl());
+                    result.put("recommendation", response);
+                    
+                    logger.info("图片状态检查 - 有推荐: {}, 有图片: {}, 图片URL: {}", 
+                        true, response.getImgUrl() != null && !response.getImgUrl().isEmpty(), response.getImgUrl());
+                } else {
+                    logger.warn("图片状态检查缓存数据类型不匹配，期望AiClothingRecommendationsResponse，实际: {}, 清除缓存: {}", 
+                        cachedResult.getClass().getSimpleName(), cacheKey);
+                    redisUtil.del(cacheKey);
+                    result.put("hasRecommendation", false);
+                    result.put("hasImage", false);
+                    result.put("message", "缓存数据格式错误，已清除");
+                }
             } catch (Exception e) {
-                result.put("hasRecommendation", true);
+                logger.error("图片状态检查缓存数据转换失败，清除缓存: {}", cacheKey, e);
+                redisUtil.del(cacheKey);
+                result.put("hasRecommendation", false);
                 result.put("hasImage", false);
-                result.put("error", "获取图片状态失败: " + e.getMessage());
-                logger.error("获取图片状态失败", e);
+                result.put("message", "缓存数据转换失败，已清除");
             }
         } else {
             result.put("hasRecommendation", false);
@@ -196,6 +204,111 @@ public class PerformanceTestController {
             result.put("errorType", e.getClass().getSimpleName());
             
             logger.error("JSON格式测试失败 - 耗时: {}ms, 错误: {}", duration, e.getMessage(), e);
+        }
+        
+        return result;
+    }
+
+    /**
+     * 详细提示词测试接口
+     */
+    @GetMapping("/detailed_prompt_test")
+    public Map<String, Object> detailedPromptTest(@RequestParam String cityId, @RequestParam String openId) {
+        Map<String, Object> result = new HashMap<>();
+        long startTime = System.currentTimeMillis();
+        
+        try {
+            ServiceResult<?> response = weatherForecastService.aiClothingRecommendations(cityId, openId);
+            long endTime = System.currentTimeMillis();
+            long duration = endTime - startTime;
+            
+            result.put("success", true);
+            result.put("duration", duration + "ms");
+            result.put("response", response);
+            
+            // 检查响应质量
+            if (response != null && response.getResult() != null) {
+                Object data = response.getResult();
+                try {
+                    // 检查clothing_info
+                    java.lang.reflect.Field clothingInfoField = data.getClass().getDeclaredField("clothingInfo");
+                    clothingInfoField.setAccessible(true);
+                    Object clothingInfo = clothingInfoField.get(data);
+                    
+                    if (clothingInfo != null) {
+                        java.lang.reflect.Field topField = clothingInfo.getClass().getDeclaredField("top");
+                        java.lang.reflect.Field bottomField = clothingInfo.getClass().getDeclaredField("bottom");
+                        java.lang.reflect.Field shoesField = clothingInfo.getClass().getDeclaredField("shoes");
+                        java.lang.reflect.Field accessoriesField = clothingInfo.getClass().getDeclaredField("accessories");
+                        java.lang.reflect.Field backgroundField = clothingInfo.getClass().getDeclaredField("background");
+                        
+                        topField.setAccessible(true);
+                        bottomField.setAccessible(true);
+                        shoesField.setAccessible(true);
+                        accessoriesField.setAccessible(true);
+                        backgroundField.setAccessible(true);
+                        
+                        String top = (String) topField.get(clothingInfo);
+                        String bottom = (String) bottomField.get(clothingInfo);
+                        String shoes = (String) shoesField.get(clothingInfo);
+                        List<String> accessories = (List<String>) accessoriesField.get(clothingInfo);
+                        String background = (String) backgroundField.get(clothingInfo);
+                        
+                        Map<String, Object> clothingQuality = new HashMap<>();
+                        clothingQuality.put("has_top", top != null && !top.isEmpty());
+                        clothingQuality.put("has_bottom", bottom != null && !bottom.isEmpty());
+                        clothingQuality.put("has_shoes", shoes != null && !shoes.isEmpty());
+                        clothingQuality.put("has_accessories", accessories != null && !accessories.isEmpty());
+                        clothingQuality.put("has_background", background != null && !background.isEmpty());
+                        clothingQuality.put("top", top);
+                        clothingQuality.put("bottom", bottom);
+                        clothingQuality.put("shoes", shoes);
+                        clothingQuality.put("accessories", accessories);
+                        clothingQuality.put("background", background);
+                        result.put("clothing_quality", clothingQuality);
+                    }
+                    
+                    // 检查detailed_recommendation
+                    java.lang.reflect.Field detailedField = data.getClass().getDeclaredField("detailedRecommendation");
+                    detailedField.setAccessible(true);
+                    Object detailed = detailedField.get(data);
+                    
+                    if (detailed != null) {
+                        java.lang.reflect.Field titleField = detailed.getClass().getDeclaredField("title");
+                        java.lang.reflect.Field contentField = detailed.getClass().getDeclaredField("content");
+                        
+                        titleField.setAccessible(true);
+                        contentField.setAccessible(true);
+                        
+                        String title = (String) titleField.get(detailed);
+                        String content = (String) contentField.get(detailed);
+                        
+                        Map<String, Object> recommendationQuality = new HashMap<>();
+                        recommendationQuality.put("has_title", title != null && !title.isEmpty());
+                        recommendationQuality.put("has_content", content != null && !content.isEmpty());
+                        recommendationQuality.put("content_length", content != null ? content.length() : 0);
+                        recommendationQuality.put("title", title);
+                        recommendationQuality.put("content", content);
+                        result.put("recommendation_quality", recommendationQuality);
+                    }
+                    
+                } catch (Exception e) {
+                    result.put("structureError", e.getMessage());
+                }
+            }
+            
+            logger.info("详细提示词测试完成 - 耗时: {}ms, 成功: {}", duration, true);
+            
+        } catch (Exception e) {
+            long endTime = System.currentTimeMillis();
+            long duration = endTime - startTime;
+            
+            result.put("success", false);
+            result.put("duration", duration + "ms");
+            result.put("error", e.getMessage());
+            result.put("errorType", e.getClass().getSimpleName());
+            
+            logger.error("详细提示词测试失败 - 耗时: {}ms, 错误: {}", duration, e.getMessage(), e);
         }
         
         return result;

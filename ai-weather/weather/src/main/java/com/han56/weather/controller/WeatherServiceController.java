@@ -116,7 +116,7 @@ public class WeatherServiceController {
      */
     @GetMapping("/ai_recommends")
     @ResultFormat
-    @RateLimited(limit = 10, type = RateLimited.RateLimitType.DAILY, message = "AI推荐服务每日限流10次，请明天再试")
+    @RateLimited(limit = 1000, type = RateLimited.RateLimitType.DAILY, message = "AI推荐服务每日限流10次，请明天再试")
     public ServiceResult<AiClothingRecommendationsResponse> aiClothingRecommendationsServiceResult(@RequestParam String cityId, @RequestParam String openId){
         return weatherForecastService.aiClothingRecommendations(cityId, openId);
     }
@@ -134,10 +134,27 @@ public class WeatherServiceController {
         
         Map<String, Object> status = new HashMap<>();
         if (cachedResult != null) {
-            AiClothingRecommendationsResponse response = (AiClothingRecommendationsResponse) cachedResult;
-            status.put("hasRecommendation", true);
-            status.put("hasImage", response.getImgUrl() != null && !response.getImgUrl().isEmpty());
-            status.put("recommendation", response);
+            try {
+                if (cachedResult instanceof AiClothingRecommendationsResponse) {
+                    AiClothingRecommendationsResponse response = (AiClothingRecommendationsResponse) cachedResult;
+                    status.put("hasRecommendation", true);
+                    status.put("hasImage", response.getImgUrl() != null && !response.getImgUrl().isEmpty());
+                    status.put("recommendation", response);
+                } else {
+                    logger.warn("AI推荐状态查询缓存数据类型不匹配，期望AiClothingRecommendationsResponse，实际: {}, 清除缓存: {}", 
+                        cachedResult.getClass().getSimpleName(), cacheKey);
+                    redisUtil.del(cacheKey);
+                    status.put("hasRecommendation", false);
+                    status.put("hasImage", false);
+                    status.put("message", "缓存数据格式错误，已清除");
+                }
+            } catch (Exception e) {
+                logger.error("AI推荐状态查询缓存数据转换失败，清除缓存: {}", cacheKey, e);
+                redisUtil.del(cacheKey);
+                status.put("hasRecommendation", false);
+                status.put("hasImage", false);
+                status.put("message", "缓存数据转换失败，已清除");
+            }
         } else {
             status.put("hasRecommendation", false);
             status.put("hasImage", false);

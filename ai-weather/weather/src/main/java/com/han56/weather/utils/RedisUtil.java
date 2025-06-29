@@ -533,4 +533,20 @@ public class RedisUtil {
             return 0;
         }
     }
+
+    // ===============================keys=================================
+
+    /**
+     * 根据模式获取匹配的key
+     * @param pattern 模式，支持通配符 * 和 ?
+     * @return 匹配的key集合
+     */
+    public Set<String> keys(String pattern) {
+        try {
+            return redisTemplate.keys(pattern);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 } 
