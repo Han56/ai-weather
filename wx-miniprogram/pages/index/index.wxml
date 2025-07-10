@@ -1,4 +1,4 @@
-<navigation-bar title="AI看天气" back="{{false}}" color="black" background="#FFF"></navigation-bar>
+<navigation-bar title="智能看天气" back="{{false}}" color="black" background="#FFF"></navigation-bar>
 <scroll-view scroll-y="true" class="container">
   <view class="loading-container" wx:if="{{loading}}">
     <view class="loading-spinner"></view>

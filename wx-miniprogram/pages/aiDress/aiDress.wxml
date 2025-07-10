@@ -1,4 +1,4 @@
-<navigation-bar title="AI穿搭" back="{{false}}" color="black" background="#FFF"></navigation-bar>
+<navigation-bar title="智能穿搭" back="{{false}}" color="black" background="#FFF"></navigation-bar>
 <scroll-view scroll-y="true" class="container" style="height: 85vh;">
   <view class="page-container">
     <view class="loading-container" wx:if="{{loading}}">
@@ -20,7 +20,7 @@
           <image class="outfit-image" src="{{outfitImageUrl}}" mode="aspectFill"></image>
           <view class="ai-badge">
             <text class="ai-icon">✨</text>
-            <text>AI推荐</text>
+            <text>智能推荐</text>
           </view>
         </view>
 
@@ -31,7 +31,7 @@
               <text class="icon">✨</text>
               <text class="title">今日穿衣推荐</text>
             </view>
-            <view class="ai-tag">AI推荐</view>
+            <view class="ai-tag">智能推荐</view>
           </view>
           
           <view class="recommendation-content">
@@ -54,7 +54,7 @@
           </view>
           <view class="profile-text">
             <text class="profile-title">用户画像设置</text>
-            <text class="profile-desc">完善您的个人喜好，获得更精准的AI穿衣推荐</text>
+            <text class="profile-desc">完善您的个人喜好，获得更精准的智能穿衣推荐</text>
           </view>
         </view>
         <view class="profile-button" bind:tap="onPortraitSettings">

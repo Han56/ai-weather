@@ -32,13 +32,13 @@
     "list": [
       {
         "pagePath": "pages/index/index",
-        "text": "首页",
+        "text": "天气",
         "iconPath": "/image/home/home_unselected.png",
         "selectedIconPath": "/image/home/home_selected.png"
       },
       {
         "pagePath": "pages/aiDress/aiDress",
-        "text": "AI穿搭",
+        "text": "穿搭",
         "iconPath": "/image/home/robot_unselected.png",
         "selectedIconPath": "/image/home/robot_selected.png"
       }

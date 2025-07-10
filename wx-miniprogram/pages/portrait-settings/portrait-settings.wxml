@@ -36,28 +36,6 @@
             </view>
           </picker>
         </view>
-
-        <!-- 国家与地区 -->
-        <view class="form-group">
-          <text class="form-label">国家与地区</text>
-          <picker bindchange="onCountryChange" value="{{countryIndex}}" range="{{countryOptions}}" range-key="label">
-            <view class="picker-container">
-              <text class="picker-text">{{formData.country ? countryOptions[countryIndex].label : '请选择国家与地区'}}</text>
-              <text class="picker-arrow">▼</text>
-            </view>
-          </picker>
-        </view>
-
-        <!-- 人种 -->
-        <view class="form-group">
-          <text class="form-label">人种</text>
-          <picker bindchange="onRaceChange" value="{{raceIndex}}" range="{{raceOptions}}" range-key="label">
-            <view class="picker-container">
-              <text class="picker-text">{{formData.race ? raceOptions[raceIndex].label : '请选择人种'}}</text>
-              <text class="picker-arrow">▼</text>
-            </view>
-          </picker>
-        </view>
       </view>
 
       <!-- 身材信息 -->
@@ -98,9 +76,9 @@
         </view>
 
         <view class="form-group">
-          <text class="form-label">风格偏好（可多选）</text>
+          <text class="form-label">风格偏好（单选）</text>
           <view class="style-grid">
-            <view wx:for="{{styleOptions}}" 
+            <view wx:for="{{currentStyleOptions}}" 
                   wx:key="value"
                   class="style-item {{selectedStates.styles[item.value] ? 'selected' : ''}}" 
                   bindtap="onStyleTap" 
@@ -122,7 +100,7 @@
         <view class="form-group">
           <text class="form-label">常用饰品（可多选）</text>
           <view class="style-grid">
-            <view wx:for="{{accessoryOptions}}" 
+            <view wx:for="{{currentAccessoryOptions}}" 
                   wx:key="value"
                   class="style-item {{selectedStates.accessories[item.value] ? 'selected' : ''}}" 
                   bindtap="onAccessoryTap" 
@@ -143,7 +121,7 @@
         <view class="form-group">
           <text class="form-label">发型偏好（单选）</text>
           <view class="radio-group">
-            <view class="radio-item" wx:for="{{hairstyleOptions}}" wx:key="value">
+            <view class="radio-item" wx:for="{{currentHairstyleOptions}}" wx:key="value">
               <radio value="{{item.value}}" checked="{{formData.hairstyles[0] === item.value}}" bindtap="onHairstyleChange" data-value="{{item.value}}"/>
               <text class="radio-text">{{item.label}}</text>
             </view>

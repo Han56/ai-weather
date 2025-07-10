@@ -274,70 +274,97 @@ checkbox .wx-checkbox-input.wx-checkbox-input-checked::before {
 .style-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  padding: 10px 0;
+  gap: 16rpx;
+  padding: 20rpx 0;
 }
 
 .style-item {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 8px 16px;
-  background-color: #f5f5f5;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
-  margin: 4px;
-  transition: all 0.3s ease;
+  padding: 24rpx 16rpx;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border: 2rpx solid #e9ecef;
+  border-radius: 16rpx;
+  margin: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
+  min-height: 80rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
 }
 
 .style-item text {
-  font-size: 14px;
-  color: #333;
-  transition: color 0.3s ease;
+  font-size: 26rpx;
+  color: #495057;
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.4;
+  transition: all 0.3s ease;
+  z-index: 2;
+  position: relative;
 }
 
 .style-item.selected {
-  background-color: #007AFF;
-  border-color: #007AFF;
+  background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+  border-color: #74b9ff;
+  box-shadow: 0 4rpx 16rpx rgba(116, 185, 255, 0.3);
+  transform: translateY(-2rpx);
 }
 
 .style-item.selected text {
   color: #ffffff;
+  font-weight: 600;
 }
 
 .style-item:active {
   transform: scale(0.95);
-  opacity: 0.8;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+}
+
+.style-item.selected:active {
+  transform: scale(0.95) translateY(-2rpx);
 }
 
 /* 添加点击波纹效果 */
-.style-item::after {
+.style-item::before {
   content: '';
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 5px;
-  height: 5px;
-  background: rgba(0, 122, 255, 0.3);
-  opacity: 0;
-  border-radius: 100%;
-  transform: scale(1, 1) translate(-50%, -50%);
-  transform-origin: 50% 50%;
+  width: 0;
+  height: 0;
+  background: rgba(116, 185, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s ease, height 0.3s ease;
+  z-index: 1;
 }
 
-.style-item:active::after {
-  animation: ripple 0.6s ease-out;
+.style-item:active::before {
+  width: 200rpx;
+  height: 200rpx;
 }
 
-@keyframes ripple {
-  0% {
-    transform: scale(0, 0);
-    opacity: 0.5;
+/* 悬停效果 */
+.style-item:hover {
+  border-color: #74b9ff;
+  box-shadow: 0 4rpx 12rpx rgba(116, 185, 255, 0.15);
+}
+
+/* 响应式调整 */
+@media (max-width: 750rpx) {
+  .style-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12rpx;
   }
-  100% {
-    transform: scale(20, 20);
-    opacity: 0;
+  
+  .style-item {
+    padding: 20rpx 12rpx;
+    min-height: 70rpx;
+  }
+  
+  .style-item text {
+    font-size: 24rpx;
   }
 }
