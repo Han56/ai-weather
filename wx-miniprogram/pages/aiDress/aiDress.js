@@ -24,7 +24,13 @@ Page({
       city: {},
       listMap: {}
     },
-    today: new Date().toISOString().split('T')[0],
+    today: (() => {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    })(),
     loading: true
   },
 
@@ -43,9 +49,13 @@ Page({
           console.log('临时登录凭证：', res.code);
           
           wx.request({
-            url: `https://api.weixin.qq.com/sns/jscode2session?appid=${appid}&secret=${secret}&js_code=${res.code}&grant_type=authorization_code`,
+            url: `${baseUrl}/weixin/getOpenId`,
+            method: 'GET',
+            data: {
+              js_code: res.code
+            },
             success: (loginRes) => {
-              if (loginRes.data.openid) {
+              if (loginRes.data && loginRes.data.success && loginRes.data.openid) {
                 console.log('用户openid：', loginRes.data.openid);
                 // 存储到全局变量
                 const app = getApp()
@@ -59,12 +69,18 @@ Page({
                   data: loginRes.data.openid
                 });
                 // 获取生活指数数据
-                this.getLiveIndex().finally(() => {
+                this.getLiveIndex().then((data) => {
+                  // console.log('生活指数获取成功：', data);
+                  // console.log('当前today值：', this.data.today);
+                  // console.log('当前liveIndex数据：', this.data.liveIndex);
+                }).catch((error) => {
+                  console.error('生活指数获取失败：', error);
+                }).finally(() => {
                   wx.hideLoading();
                   this.setData({ loading: false });
                 });
               } else {
-                console.log('获取openid失败：', loginRes.data.errmsg);
+                console.log('获取openid失败：', loginRes.data);
                 wx.showToast({
                   title: '登录失败',
                   icon: 'error'
@@ -317,13 +333,13 @@ Page({
         method: 'GET',
         data: { cityId: adcode },
         success: (res) => {
+          // console.log('生活指数接口返回：', res.data);
           if (res.data.success && res.data.code === '200') {
             const result = res.data.result;
-            // console.log(result)
             if (result.code === 0) {
               // 处理生活指数数据，去掉"指数"后缀
               const liveIndex = result.liveIndex;
-              if (liveIndex.listMap) {
+              if (liveIndex && liveIndex.listMap) {
                 Object.keys(liveIndex.listMap).forEach(date => {
                   liveIndex.listMap[date] = liveIndex.listMap[date].map(item => ({
                     ...item,
@@ -332,19 +348,26 @@ Page({
                 });
               }
               
+              // console.log('处理后的生活指数数据：', liveIndex);
               this.setData({
                 liveIndex: liveIndex
               });
-              // 更新穿搭建议
-              // this.updateDressAdvice(); // 此处逻辑已由新的generateRecommendation接管
               resolve(res.data);
             } else {
+              // console.error('生活指数接口返回错误：', result);
               reject('获取生活指数失败');
               wx.showToast({
                 title: '获取生活指数失败',
                 icon: 'error'
               });
             }
+          } else {
+            console.error('生活指数接口请求失败：', res.data);
+            reject('获取生活指数失败');
+            wx.showToast({
+              title: '获取生活指数失败',
+              icon: 'error'
+            });
           }
         },
         fail: (err) => {
@@ -443,5 +466,23 @@ Page({
     wx.navigateTo({
       url: "/pages/portrait-settings/portrait-settings",
     })
+  },
+
+  // 右上角转发
+  onShareAppMessage: function () {
+    return {
+      title: 'AI智能穿搭推荐',
+      path: '/pages/aiDress/aiDress', // 跳转到当前页面
+      imageUrl: '' // 可选，分享卡片图片
+    }
+  },
+
+  // 分享到朋友圈
+  onShareTimeline: function () {
+    return {
+      title: 'AI智能穿搭推荐',
+      query: '', // 可选，分享参数
+      imageUrl: '' // 可选，分享卡片图片
+    }
   },
 })

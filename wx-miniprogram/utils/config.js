@@ -1,5 +1,5 @@
 // utils/config.js
-const ENV = 'dev'; // 'dev'、'pre' 或 'prod'
+const ENV = 'prod'; // 'dev'、'pre' 或 'prod'
 
 const config = {
   dev: {

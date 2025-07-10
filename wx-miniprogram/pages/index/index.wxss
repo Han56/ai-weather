@@ -143,6 +143,7 @@
   padding: 18px 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   position: relative;
+  gap: 10px;
 }
 
 .forecast-item:last-child {
@@ -153,6 +154,7 @@
   width: 50px;
   font-size: 17px;
   font-weight: 600;
+  flex-shrink: 0;
 }
 
 .date {
@@ -160,7 +162,7 @@
   font-size: 14px;
   color: #2c3e50;
   text-align: center;
-  margin-left: -5px;
+  flex-shrink: 0;
 }
 
 .weather-condition {
@@ -168,7 +170,7 @@
   font-size: 15px;
   color: #2c3e50;
   text-align: center;
-  margin-left: -5px;
+  flex-shrink: 0;
 }
 
 .weather-icon {
@@ -178,7 +180,7 @@
   justify-content: center;
   align-items: center;
   position: relative;
-  margin-left: 8px;
+  flex-shrink: 0;
 }
 
 .icon-cloudy::before {
@@ -253,10 +255,11 @@
 }
 
 .temp-container {
-  position: absolute;
-  right: 70px;
   display: flex;
   align-items: center;
+  flex-shrink: 0;
+  margin-left: auto;
+  margin-right: 80px;
 }
 
 .low-temp {
@@ -283,24 +286,26 @@
 }
 
 .wind-info {
-  position: absolute;
-  right: 15px;
   display: flex;
-  flex-direction: row;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
+  flex-shrink: 0;
+  width: 70px;
 }
 
 .wind-dir {
   font-size: 12px;
   color: #2c3e50;
   white-space: nowrap;
+  line-height: 1.2;
 }
 
 .wind-level {
   font-size: 12px;
   color: #2c3e50;
-  margin-left: 4px;
+  margin-top: 2px;
   white-space: nowrap;
+  line-height: 1.2;
 }
 
 .temp-range {
@@ -529,6 +534,49 @@ page {
   
   .grid-item:nth-child(9) {
     grid-column: span 2;
+  }
+
+  /* 调整预报项在小屏幕上的布局 */
+  .forecast-item {
+    gap: 8px;
+    padding: 15px 0;
+  }
+
+  .day {
+    width: 40px;
+    font-size: 15px;
+  }
+
+  .date {
+    width: 40px;
+    font-size: 12px;
+  }
+
+  .weather-condition {
+    width: 45px;
+    font-size: 13px;
+  }
+
+  .weather-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .temp-container {
+    margin-right: 60px;
+  }
+
+  .low-temp, .high-temp {
+    width: 35px;
+    font-size: 17px;
+  }
+
+  .wind-info {
+    width: 60px;
+  }
+
+  .wind-dir, .wind-level {
+    font-size: 11px;
   }
 }
 

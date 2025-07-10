@@ -143,17 +143,21 @@ Page({
   // 获取选择的城市信息
   onShow() {
     const cityInfo = citySelector.getCity();
+    console.log('citySelector.getCity() 返回:', cityInfo);
     if (cityInfo) {
+      const adcode = cityInfo.id || '230100';
+      console.log('onShow 选中城市:', cityInfo.fullname || cityInfo.name, 'adcode:', adcode);
       this.setData({
         selectedCity: cityInfo.fullname || cityInfo.name,
         location: cityInfo.fullname || cityInfo.name
       });
       
-      // 更新全局adcode，以便其他页面（如AI穿搭）可以获取到
-      getApp().globalData.adcode = cityInfo.id;
-      console.log('当前city_id:'+cityInfo.id);
+      // 更新全局adcode
+      // getApp().globalData.adcode = cityInfo.id;
+      console.log('当前选择city_id:'+cityInfo.id);
+      console.log('当前用户所在city_id:'+ getApp().globalData.adcode);
       // 重新加载所有天气数据
-      this._loadAllWeatherData(cityInfo.id);
+      this._loadAllWeatherData(adcode);
     }
   },
 
@@ -182,6 +186,7 @@ Page({
 
   // 触发定位操作
   handleLocate() {
+    console.log('开始定位...');
     if (this.data.isLocating) return;
     this.setData({ isLocating: true });
     
@@ -189,6 +194,7 @@ Page({
     wx.getSetting({
       success: (res) => {
         if (res.authSetting['scope.userLocation']) {
+          console.log('已授权，准备获取位置...');
           // 已授权，直接获取位置
           this._getLocation()
             .then(coords => this._reverseGeocode(coords))
@@ -209,6 +215,7 @@ Page({
             })
             .finally(() => this.setData({ isLocating: false }));
         } else {
+          console.log('用户拒绝授权，使用默认城市');
           // 未授权，显示授权弹窗
           wx.authorize({
             scope: 'scope.userLocation',
@@ -234,7 +241,7 @@ Page({
             },
             fail: () => {
               // 用户拒绝授权，使用默认城市
-              console.log('用户拒绝授权');
+              console.log('用户拒绝授权，使用默认城市');
               this.setData({
                 selectedCity: '哈尔滨市',
                 location: '哈尔滨市',
@@ -266,7 +273,7 @@ Page({
         type: 'gcj02',
         altitude: true,
         success: res => {
-          // console.log('获取位置成功:', res);
+          console.log('获取位置成功:', res);
           resolve({
             lat: res.latitude,
             lng: res.longitude
@@ -285,6 +292,10 @@ Page({
 
   // 处理成功结果
   _handleSuccess(city) {
+    if (!city) {
+      this.setData({ selectedCity: '未知城市' });
+      return;
+    }
     const pureCity = city.replace(/ $/, ''); 
     this.setData({ selectedCity: pureCity });
   },
@@ -311,14 +322,16 @@ Page({
         },
         success: res => {
           if (res.data.status === 0) {
-            // console.log('逆地理编码结果:', res.data.result);
-            const adcode = res.data.result.ad_info.adcode;
-            // console.log('区划代码:', adcode);
+            const adcode = res.data.result.ad_info.adcode || '230100';
+            const city = res.data.result.address_component.city 
+              || res.data.result.address_component.province 
+              || '未知城市';
+            console.log('逆地理编码结果 city:', city, 'adcode:', adcode);
             // 更新全局 adcode
             getApp().globalData.adcode = adcode;
             // 返回包含城市名和adcode的对象
             resolve({
-              city: res.data.result.address_component.city,
+              city: city,
               adcode: adcode
             });
           } else {
@@ -332,6 +345,7 @@ Page({
 
   // 加载所有天气数据
   _loadAllWeatherData(adcode) {
+    console.log('准备加载天气数据，adcode:', adcode);
     if (!adcode) {
       console.error('缺少城市编码');
       return Promise.reject('缺少城市编码');
@@ -407,6 +421,7 @@ Page({
 
   // 修改现有的请求方法，返回Promise
   getRealTimeWeather: function(adcode) {
+    console.log('请求实时天气，adcode:', adcode);
     return new Promise((resolve, reject) => {
       if (!adcode) {
         reject('未传入城市编码');
@@ -418,6 +433,7 @@ Page({
         method: 'GET',
         data: { cityId: adcode },
         success: (res) => {
+          console.log('实时天气接口返回:', res);
           if (res.data && res.data.code === '200') {
             // 原有的数据处理逻辑
             const weatherData = res.data.result.realTimeMojiWeatherData.realTimeWeatherCondition;
@@ -665,6 +681,24 @@ Page({
     if (!timeStr) return '00:00';
     const timeMatch = timeStr.match(/(\d{2}:\d{2})/);
     return timeMatch ? timeMatch[1] : '00:00';
+  },
+
+  // 右上角转发
+  onShareAppMessage: function () {
+    return {
+      title: 'AI智能天气',
+      path: '/pages/index/index', // 跳转到当前页面
+      imageUrl: '' // 可选，分享卡片图片
+    }
+  },
+
+  // 分享到朋友圈
+  onShareTimeline: function () {
+    return {
+      title: 'AI智能天气',
+      query: '', // 可选，分享参数
+      imageUrl: '' // 可选，分享卡片图片
+    }
   },
 })
 
