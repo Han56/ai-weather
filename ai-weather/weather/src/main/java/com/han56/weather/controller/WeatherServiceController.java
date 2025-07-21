@@ -35,7 +35,7 @@ public class WeatherServiceController {
      * */
     @GetMapping("/aqi")
     @ResultFormat
-    public ServiceResult<AQIMojiResponse> aqi(@RequestParam String cityId){
+    public ServiceResult<AQIMojiResponse> aqi(@RequestParam(name = "cityId") String cityId){
         return weatherForecastService.aqiForeCast5Days(cityId);
     }
 
@@ -45,7 +45,7 @@ public class WeatherServiceController {
      * */
     @GetMapping("/real_time_weather")
     @ResultFormat
-    public ServiceResult<RealTimeMojiWeatherResponse> realTimeMojiWeatherResponseServiceResult(@RequestParam String cityId){
+    public ServiceResult<RealTimeMojiWeatherResponse> realTimeMojiWeatherResponseServiceResult(@RequestParam(name = "cityId") String cityId){
         return weatherForecastService.realTimeWeatherCondition(cityId);
     }
 
@@ -55,7 +55,7 @@ public class WeatherServiceController {
      * */
     @GetMapping("/forecast_15days_weather")
     @ResultFormat
-    public ServiceResult<Forecast15DaysMojiResponse> forecast15DaysMojiResponseServiceResult(@RequestParam String cityId){
+    public ServiceResult<Forecast15DaysMojiResponse> forecast15DaysMojiResponseServiceResult(@RequestParam(name = "cityId") String cityId){
         return weatherForecastService.forecast15DaysWeather(cityId);
     }
 
@@ -65,7 +65,7 @@ public class WeatherServiceController {
      * */
     @GetMapping("/forecast_hourly_weather")
     @ResultFormat
-    public ServiceResult<ForecastHourlyMojiResponse> forecastHourlyMojiResponseServiceResult(@RequestParam String cityId){
+    public ServiceResult<ForecastHourlyMojiResponse> forecastHourlyMojiResponseServiceResult(@RequestParam(name = "cityId") String cityId){
         return weatherForecastService.forecastHourlyWeather(cityId);
     }
 
@@ -75,7 +75,7 @@ public class WeatherServiceController {
      * */
     @GetMapping("/weather_alert")
     @ResultFormat
-    public ServiceResult<WeatherAlertMojiResponse> weatherAlertMojiResponseServiceResult(@RequestParam String cityId){
+    public ServiceResult<WeatherAlertMojiResponse> weatherAlertMojiResponseServiceResult(@RequestParam(name = "cityId") String cityId){
         return weatherForecastService.weatherAlert(cityId);
     }
 
@@ -84,7 +84,7 @@ public class WeatherServiceController {
      * */
     @GetMapping("/live_index")
     @ResultFormat
-    public ServiceResult<LiveMojiResponse> liveMojiResponseServiceResult(@RequestParam String cityId){
+    public ServiceResult<LiveMojiResponse> liveMojiResponseServiceResult(@RequestParam(name = "cityId") String cityId){
         return weatherForecastService.liveIndex(cityId);
     }
 
@@ -94,7 +94,7 @@ public class WeatherServiceController {
      * */
     @GetMapping("/aqi_real_time")
     @ResultFormat
-    public ServiceResult<AQIRealTimeMojiResponse> aqiRealTimeMojiResponseServiceResult(@RequestParam String cityId){
+    public ServiceResult<AQIRealTimeMojiResponse> aqiRealTimeMojiResponseServiceResult(@RequestParam(name = "cityId") String cityId){
         return weatherForecastService.aqiRealTime(cityId);
     }
 
@@ -105,7 +105,7 @@ public class WeatherServiceController {
      * */
     @GetMapping("/limit_info")
     @ResultFormat
-    public ServiceResult<LimitInfoMojiResponse> limitInfoMojiResponseServiceResult(@RequestParam String cityId){
+    public ServiceResult<LimitInfoMojiResponse> limitInfoMojiResponseServiceResult(@RequestParam(name = "cityId") String cityId){
         return weatherForecastService.limitInfo(cityId);
     }
 
@@ -117,7 +117,8 @@ public class WeatherServiceController {
     @GetMapping("/ai_recommends")
     @ResultFormat
     @RateLimited(limit = 1000, type = RateLimited.RateLimitType.DAILY, message = "AI推荐服务每日限流10次，请明天再试")
-    public ServiceResult<AiClothingRecommendationsResponse> aiClothingRecommendationsServiceResult(@RequestParam String cityId, @RequestParam String openId){
+    public ServiceResult<AiClothingRecommendationsResponse> aiClothingRecommendationsServiceResult(@RequestParam(name = "cityId") String cityId,
+                                                                                                   @RequestParam(name = "openId") String openId){
         return weatherForecastService.aiClothingRecommendations(cityId, openId);
     }
 
@@ -128,7 +129,8 @@ public class WeatherServiceController {
      */
     @GetMapping("/ai_recommends_status")
     @ResultFormat
-    public ServiceResult<Map<String, Object>> aiRecommendStatus(@RequestParam String cityId, @RequestParam String openId){
+    public ServiceResult<Map<String, Object>> aiRecommendStatus(@RequestParam(name = "cityId") String cityId,
+                                                                @RequestParam(name = "openId") String openId){
         String cacheKey = String.format("ai_recommend:%s:%s", cityId, openId);
         Object cachedResult = redisUtil.get(cacheKey);
         
