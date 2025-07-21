@@ -87,6 +87,64 @@
       </view>
     </view>
     
+    <!-- 新增：未来5小时天气模块 -->
+    <view class="hourly-summary-container">
+      <view wx:if="{{hourlySummaryLoading}}" class="hourly-summary-loading">未来5小时天气加载中...</view>
+      <block wx:elif="{{hourlySummary}}">
+        <view class="hourly-summary-title">未来5小时天气概况</view>
+        <view class="hourly-summary-section">
+          <view class="hourly-summary-row">
+            <text class="hourly-summary-label">降水</text>
+            <text class="hourly-summary-value">{{hourlySummary.precipitation.summary}}</text>
+          </view>
+          <view class="hourly-summary-hours">
+            <block wx:for="{{hourlySummary.precipitation.hours}}" wx:key="hour">
+              <view class="hourly-hour-item">
+                <text class="hourly-hour">{{item.hour}}时</text>
+                <text class="hourly-hour-condition">{{item.condition}}</text>
+              </view>
+            </block>
+          </view>
+        </view>
+        <view class="hourly-summary-section">
+          <view class="hourly-summary-row">
+            <text class="hourly-summary-label">气温</text>
+            <text class="hourly-summary-value">{{hourlySummary.temperature.summary}}</text>
+          </view>
+          <view class="hourly-summary-row">
+            <text class="hourly-summary-label">区间</text>
+            <text class="hourly-summary-value">{{hourlySummary.temperature.min}}°C ~ {{hourlySummary.temperature.max}}°C</text>
+          </view>
+          <view class="hourly-summary-row">
+            <text class="hourly-summary-label">湿度</text>
+            <text class="hourly-summary-value">{{hourlySummary.temperature.humidity_analysis}}</text>
+          </view>
+        </view>
+        <view class="hourly-summary-section">
+          <view class="hourly-summary-row">
+            <text class="hourly-summary-label">风速</text>
+            <text class="hourly-summary-value">{{hourlySummary.wind.summary}}</text>
+          </view>
+        </view>
+        <view class="hourly-summary-section">
+          <view class="hourly-summary-row">
+            <text class="hourly-summary-label">紫外线</text>
+            <text class="hourly-summary-value">{{hourlySummary.uv.summary}}</text>
+          </view>
+          <view class="hourly-summary-row">
+            <text class="hourly-summary-label">范围</text>
+            <text class="hourly-summary-value">{{hourlySummary.uv.range.min}} ~ {{hourlySummary.uv.range.max}}</text>
+          </view>
+          <view class="hourly-summary-row">
+            <text class="hourly-summary-label">趋势</text>
+            <text class="hourly-summary-value">{{hourlySummary.uv.trend}}</text>
+          </view>
+        </view>
+      </block>
+      <view wx:else class="hourly-summary-empty">暂无未来5小时天气数据</view>
+    </view>
+    <!-- 未来5小时天气模块结束 -->
+
     <!-- 下半部分：10日天气预报 -->
     <view class="forecast-container">
       <view class="forecast-header">

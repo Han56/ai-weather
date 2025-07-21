@@ -125,6 +125,9 @@ Page({
         color: "default",
       },
     ],
+    // 新增：未来5小时天气数据
+    hourlySummary: null,
+    hourlySummaryLoading: true,
   },
 
   // 打开城市选择器插件
@@ -356,13 +359,19 @@ Page({
       duration: 5000
     });
 
-    // 并行发起所有请求
-    return Promise.all([
+    // 立即调用高时延接口，让它在后台加载，不阻塞主流程
+    this._requestWithRetry(() => this.getHourlyWeatherSummary(adcode));
+
+    // 将核心的、快速的接口编组，用于控制主要加载状态
+    const mainWeatherDataPromise = Promise.all([
       this._requestWithRetry(() => this.getRealTimeWeather(adcode)),
       this._requestWithRetry(() => this.getRealTimeAqi(adcode)),
       this._requestWithRetry(() => this.getRealTimeWeatherAlert(adcode)),
       this._requestWithRetry(() => this.getForecast10DaysWeather(adcode))
-    ]).catch(err => {
+    ]);
+
+    // 核心数据加载完成后，立刻隐藏全局的 "加载中..." 提示
+    mainWeatherDataPromise.catch(err => {
       console.error('加载天气数据失败：', err);
       wx.showToast({
         title: '部分数据加载失败',
@@ -374,6 +383,8 @@ Page({
       wx.stopPullDownRefresh();
       this.setData({ loading: false });
     });
+
+    return mainWeatherDataPromise;
   },
 
   // 请求重试包装器
@@ -590,6 +601,31 @@ Page({
           }
         },
         fail: reject
+      });
+    });
+  },
+
+  // 新增：获取未来5小时天气摘要
+  getHourlyWeatherSummary: function(adcode) {
+    this.setData({ hourlySummaryLoading: true });
+    return new Promise((resolve, reject) => {
+      wx.request({
+        url: `${baseUrl}/api/ai/hourly-weather-summary`,
+        method: 'GET',
+        data: { cityId: adcode },
+        success: (res) => {
+          if (res.data) {
+            this.setData({ hourlySummary: res.data, hourlySummaryLoading: false });
+            resolve(res.data);
+          } else {
+            this.setData({ hourlySummaryLoading: false });
+            reject('获取未来5小时天气摘要失败');
+          }
+        },
+        fail: (err) => {
+          this.setData({ hourlySummaryLoading: false });
+          reject(err);
+        }
       });
     });
   },
