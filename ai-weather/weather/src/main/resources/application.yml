@@ -34,19 +34,6 @@ spring:
               stat:
                 slowSqlMillis:5000
       use-global-data-source-stat: true
-  # Redis配置
-  redis:
-    host: 39.104.14.216
-    port: 6380
-    password: "Wang150460!" # 请在这里填入您的Redis密码，建议使用引号
-    database: 0
-    timeout: 10000ms
-    lettuce:
-      pool:
-        max-active: 8
-        max-wait: -1ms
-        max-idle: 8
-        min-idle: 0
 
 mybatis:
 
